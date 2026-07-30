@@ -3,11 +3,15 @@
 
 profile: req
 
-# Where the requirements live, relative to the repo root.
-# Top-level, deliberately OUTSIDE mkdocs' docs_dir (`docs/`) so the REQ corpus is not
-# built and gh-deploy'd by .github/workflows/docs.yml.
+# Where the engine's documents live, relative to the repo root. All four are top-level,
+# deliberately OUTSIDE mkdocs' docs_dir (`docs/`) so they are not built and gh-deploy'd by
+# .github/workflows/docs.yml. plans_dir/concepts_dir became configurable in REQ-084 — before
+# that the engine hardcoded docs/plans and docs/concepts, which is why this repo used to keep
+# its plans inside docs/ behind an `exclude_docs` rule in mkdocs.yml.
 requirements_dir: requirements
 index_file: requirements/REQUIREMENTS_INDEX.md
+plans_dir: requirements/plans
+concepts_dir: requirements/concepts
 
 # Account / quota provider for headless runs.
 #   clauder — delegate the per-step budget gate to the external `clauder` CLI (REQ-058):

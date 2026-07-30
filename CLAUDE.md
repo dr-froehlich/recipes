@@ -21,10 +21,12 @@ black box: use the CLI and the docs, never read or patch engine source from here
 - **Requirements are the unit of work.** Every change starts as a REQ in **`requirements/`**
   with a row in [`REQUIREMENTS_INDEX.md`](requirements/REQUIREMENTS_INDEX.md). New idea →
   `/intake`; work the next step → `/advance`. Don't hand-write REQ files from scratch.
-- **Path deviation:** `STEWARD.md` documents the corpus at `docs/requirements/`; in this repo it
-  is top-level `requirements/` (set via `requirements_dir` in `.devsteward/config.yaml`) so the
-  mkdocs `gh-deploy` workflow does not publish it. Plans stay at `docs/plans/` — the engine
-  hardcodes that path — and are excluded from the site via `exclude_docs` in `mkdocs.yml`.
+- **Path deviation:** `STEWARD.md` documents the conventional layout under `docs/`; this repo
+  keeps every engine document top-level so the mkdocs `gh-deploy` workflow does not publish it —
+  `requirements/`, `requirements/plans/`, `requirements/concepts/`, set via `requirements_dir`,
+  `index_file`, `plans_dir` and `concepts_dir` in `.devsteward/config.yaml` (all four became
+  configurable in DevSteward REQ-084; the earlier `exclude_docs` workaround in `mkdocs.yml` is
+  gone with it).
 - **Status has exactly one source: the index row ↔ REQ frontmatter pair**, kept in lockstep by
   `steward lint` and read live by `steward status`. Never record status anywhere else.
 - **Same-commit discipline:** a REQ's frontmatter, its row in the index, and the code that
