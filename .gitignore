@@ -95,3 +95,12 @@ vue3/src/plugins
 docs/reference/
 .idea/vcs.xml
 .idea/db-forest-config.xml
+
+# Local dev virtualenv (upstream ignores `venv/` only)
+.venv/
+
+# DevSteward / Claude Code local state (machine-specific, never shared)
+.claude/settings.local.json
+.claude/scheduled_tasks.lock
+# NOTE: .devsteward/ (config.yaml, state.yaml, events.jsonl) IS committed — the ledger
+# is part of the project's history. Do not ignore it.

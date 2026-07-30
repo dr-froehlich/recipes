@@ -1,0 +1,80 @@
+# DevSteward per-project configuration (lives in the consumer repo).
+# The engine is shared and pinned by tag; this file is yours to edit.
+
+profile: req
+
+# Where the requirements live, relative to the repo root.
+# Top-level, deliberately OUTSIDE mkdocs' docs_dir (`docs/`) so the REQ corpus is not
+# built and gh-deploy'd by .github/workflows/docs.yml.
+requirements_dir: requirements
+index_file: requirements/REQUIREMENTS_INDEX.md
+
+# Account / quota provider for headless runs.
+#   clauder — delegate the per-step budget gate to the external `clauder` CLI (REQ-058):
+#             `clauder gate` decides proceed/switch/wait against the combined budget across
+#             accounts and tells cswap when to switch. The engine never touches cswap
+#             directly and never runs `clauder monitor` (operator-started, out-of-band).
+#             Degrades to "proceed, no quota check" when `clauder` is absent from PATH.
+#   single  — plain `claude`, no quota machinery.
+accounts:
+  provider: clauder
+
+# How a headless `claude -p` run is allowed to act on the repo. Headless sessions have
+# no interactive approver, so without this every edit stalls and the run does nothing.
+#   dangerously-skip  — bypass all permission checks (autonomous edits; the default,
+#                       matches the proven batch runner). Use in a trusted repo.
+#   bypassPermissions / acceptEdits / plan / default — claude --permission-mode values.
+#   ask               — no flag (attended/interactive; a headless run can't edit).
+#
+# Per-step-kind model/effort (REQ-029/030). Each REQ is one `develop` Claude session; a
+# red gate spawns up to two `repair` sessions, then parks; a REQ with artifact/manual
+# acceptance criteria adds one `validate` System Tester session. `claude.model`/
+# `claude.effort` are the flat defaults (Opus / high); `claude.steps.<kind>` overrides a
+# kind. Built-in defaults: develop and validate inherit the flat values; repair drops to
+# Sonnet (cheap cold restart).
+#   steps:
+#     develop:  {model: claude-opus-4-8, effort: high}
+#     repair:   {model: claude-sonnet-4-6}
+#     validate: {model: claude-opus-4-8, effort: high}
+claude:
+  permission_mode: dangerously-skip
+
+# Branching model — trunk-based. `main` is production (release tags are cut here); the
+# integration branch is the default working branch. All work — declaration *and*
+# implementation — lands on the integration branch; there are no feature branches, no
+# worktrees, and the engine never switches branches. The engine refuses to autocommit on
+# `production_branch` — switch to the integration branch to run. The only branch operation
+# is the human-gated integration → production release PR.
+git:
+  production_branch: master
+  integration_branch: develop
+
+# How the land gate verifies (REQ-028). A `land` step is DONE only when its named
+# acceptance behaviour *observably ran and passed*: a skipped or zero-collection named
+# test fails the gate (skip ≠ green), and the whole suite must be clean.
+#   full_suite — the command for the project's full test suite, run at land in addition
+#                to each named acceptance test (default `python -m pytest`; set to `null`
+#                to disable). Skips in the full suite stay legal; failures/errors fail land.
+#   python     — optional explicit interpreter the gate runs tests under (e.g.
+#                `.venv/bin/python`). A configured-but-unusable interpreter is a hard,
+#                surfaced error. Unset: discover the project venv, then the engine's own.
+#   env_file   — the declared env-file the land's commit-integrity self-check carries into
+#                its ephemeral tree extract (REQ-072), so the check runs in the same
+#                declared environment the gate used (default `.env`; set to `null` to
+#                disable). Honor-when-present: an absent file is a no-op. The file is
+#                copied only into the throwaway extract dir — its contents never reach a
+#                message, event, or artifact.
+verify:
+  # Tandoor's pytest.ini hardcodes `-n auto` + coverage into addopts; coverage fights xdist
+  # (see CLAUDE.md § Tests), so the gate appends `--no-cov` (a CLI flag beats addopts).
+  # `python` MUST stay the leading token — the engine only rebinds a *leading* interpreter
+  # to verify.python, so an env-var prefix (PYTEST_ADDOPTS=...) would silently bypass the venv.
+  full_suite: python -m pytest --no-cov
+  # The venv is not active in agent or headless `steward run` shells, and this box has no
+  # ambient `python` — so name the interpreter explicitly.
+  python: .venv/bin/python
+
+# verify:
+#   full_suite: python -m pytest
+#   python: .venv/bin/python
+#   env_file: .env
