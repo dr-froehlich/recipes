@@ -30,3 +30,7 @@ vue/package.json
 vue/tsconfig.json
 vue/src/utils/openapi
 venv
+.venv
+# Fork deploy tooling. Never belongs in the image, and deploy/dumps/ holds household
+# database dumps — a local `docker build` would otherwise bake them in via `COPY . ./`.
+deploy

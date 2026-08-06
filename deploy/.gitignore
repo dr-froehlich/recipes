@@ -1,0 +1,8 @@
+# The concrete deploy target — household hostname, compose path, public URL. REQ-002
+# Decision 3 keeps these out of a public fork; only target.env.example is committed.
+target.env
+
+# Database dumps taken by deploy.sh. These are the household's actual recipe data.
+dumps/
+*.dump
+*.dump.stderr

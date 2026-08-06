@@ -6,7 +6,6 @@ jobs:
   build-container:
     name: Build ${{ matrix.name }} Container
     runs-on: ubuntu-latest
-    if: github.repository_owner == 'TandoorRecipes'
     continue-on-error: ${{ matrix.continue-on-error }}
     permissions:
       contents: read
@@ -51,9 +50,12 @@ jobs:
         uses: docker/setup-qemu-action@v4
       - name: Set up Buildx
         uses: docker/setup-buildx-action@v4
+      # Docker Hub is upstream's registry only. `github.secret_source` is 'Actions' on a fork
+      # too — the fork simply has no DOCKER_* secrets — so without the owner check this step
+      # would attempt a login with an empty username and fail the job before any build.
       - name: Login to Docker Hub
         uses: docker/login-action@v4
-        if: github.secret_source == 'Actions'
+        if: github.secret_source == 'Actions' && github.repository_owner == 'TandoorRecipes'
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
@@ -68,9 +70,11 @@ jobs:
         id: meta
         uses: docker/metadata-action@v6
         with:
+          # Docker Hub only on upstream; ghcr follows whichever repository is building, so a
+          # fork publishes to its own package namespace without hardcoding a fork name here.
           images: |
-            vabene1111/recipes
-            ghcr.io/TandoorRecipes/recipes
+            ${{ github.repository_owner == 'TandoorRecipes' && 'vabene1111/recipes' || '' }}
+            ghcr.io/${{ github.repository }}
           flavor: |
             latest=false
             suffix=${{ matrix.suffix }}
@@ -80,6 +84,7 @@ jobs:
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}
             type=ref,event=branch
+            type=sha,format=long
       - name: Build and Push
         uses: docker/build-push-action@v7
         with:
@@ -97,7 +102,7 @@ jobs:
     name: Notify Stable
     runs-on: ubuntu-latest
     needs: build-container
-    if: startsWith(github.ref, 'refs/tags/')
+    if: startsWith(github.ref, 'refs/tags/') && github.repository_owner == 'TandoorRecipes'
     steps:
       - name: Set tag name
         run: |
@@ -115,7 +120,7 @@ jobs:
     name: Notify Beta
     runs-on: ubuntu-latest
     needs: build-container
-    if: github.ref == 'refs/heads/beta'
+    if: github.ref == 'refs/heads/beta' && github.repository_owner == 'TandoorRecipes'
     steps:
       # Send beta discord notification
       - name: Discord notification
