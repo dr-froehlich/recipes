@@ -1,0 +1,5 @@
+{
+  "system_page_shows_fork_commit": true,
+  "recipes_and_images_render": true,
+  "backup_verified_before_migration": true
+}
