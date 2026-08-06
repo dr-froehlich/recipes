@@ -1,10 +1,13 @@
 version: 1
 profile: req
 cursor:
-  step: REQ-001:develop
+  step: REQ-002:develop
 steps:
   REQ-001:develop:
     status: done
     updated: '2026-07-30T09:07:05+00:00'
+  REQ-002:develop:
+    status: done
+    updated: '2026-08-06T07:34:54+00:00'
 decisions: []
-seq: 3
+seq: 4
