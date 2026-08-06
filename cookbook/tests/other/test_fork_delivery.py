@@ -285,7 +285,14 @@ def test_published_manifest_matches_running_image():
     Evidence the System Tester must capture (see deploy/README.md § Evidence):
 
       manifest-inspect.json     `docker manifest inspect <image>:sha-<sha>`
+      index-digest.txt          `docker buildx imagetools inspect --format '{{.Manifest.Digest}}'`
       running-image-digest.txt  the host's RepoDigest for the running app container
+
+    index-digest.txt is not redundant. Pulling a multi-arch tag records the digest of the
+    *index* in the host's RepoDigests, while `docker manifest inspect` prints only the child
+    manifests — never the index's own digest. Comparing the host's digest against the child
+    digests alone therefore fails on a perfectly good deploy. Found by running the real
+    deploy against the household host, not by reasoning about it.
     """
     manifest = json.loads(_require_evidence('manifest-inspect.json').read_text(encoding='utf-8'))
 
@@ -295,7 +302,12 @@ def test_published_manifest_matches_running_image():
     assert running, 'the captured running-image digest is empty'
     assert 'sha256:' in running, f'running-image-digest.txt does not contain a digest: {running!r}'
 
-    published = _collect_manifest_digests(manifest)
+    index_digest = _require_evidence('index-digest.txt').read_text(encoding='utf-8').strip()
+    assert index_digest.startswith('sha256:'), f'index-digest.txt is not a digest: {index_digest!r}'
+
+    # Either identifies this image: the index digest (what a tag pull records) or one of the
+    # per-platform manifest digests (what a digest-pinned single-architecture pull records).
+    published = _collect_manifest_digests(manifest) | {index_digest}
     assert published, f'no manifest digests found in the captured manifest: {manifest}'
 
     assert any(digest in running

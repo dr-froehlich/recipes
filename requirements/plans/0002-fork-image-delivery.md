@@ -158,6 +158,53 @@ it does not become a schedule.
    will *defer* the flip to the validate step because AC3/AC4 are artifact/manual.
 10. Close with `steward checkpoint REQ-002 develop`.
 
+## What actually happened
+
+The build and deploy were carried out in this session (Decision 7). Recorded because
+several things came out differently from the plan above:
+
+**The fork's workflows were disabled, not broken.** After the workflow change landed, two
+pushes produced *zero* runs — including `ci.yml` and `docs.yml`, which this REQ never
+touched. GitHub disables all workflows on a newly created fork until the owner enables them
+in the Actions tab; `GET /actions/permissions` reports `enabled: true` regardless, and
+`PUT .../workflows/{id}/enable` returns success while changing nothing. Only the UI action
+works. Worth knowing before diagnosing a workflow file that is in fact correct.
+
+**`ci.yml` carries the same owner gate** (line 7) and skipped. So the fork's test suite does
+not run in CI at all. Out of REQ-002's acceptance scope — its criteria are about the Docker
+build — and therefore left for a follow-on REQ rather than widened into this one silently.
+
+**The deploy is not the version jump it looked like.** The host ran release `2.6.13`; this
+fork's `develop` descends from `2.6.11`. That reads like a downgrade, and is not: `2.6.13`
+contains **zero** non-merge code commits that develop lacks (the 15 are release merges into
+master plus a docs fix), and there is a **zero-migration delta** between them. The deploy
+was therefore schema-neutral, and `migrate` reported `No migrations to apply.` on the live
+database exactly as predicted.
+
+**A rehearsal replaced the proposed data migration.** The operator's first instinct was to
+stand a second instance up on a new hostname, hand-migrate the three recipes, retire the old
+container and move DNS. Since the fork is the same application at an identical schema, there
+was nothing to migrate between; that plan's only real risk was the hand-copying. Instead: a
+throwaway stack on the host, its own database restored from a production dump, reached over
+an SSH tunnel — no DNS, no proxy change, no Cloudflare app. It proved the arm64 image boots,
+the SPA is present, the three recipes and their images render, and it **actually restored
+the dump into a live cluster**, discharging by hand the one limitation `verify_dump.sh`
+documents. Then it was torn down and the production stack was swapped in place.
+
+**Two defects in the AC3 evidence contract, found by grading real evidence.** Both would
+have failed the validate phase on a correct deploy:
+
+1. `docker inspect` on a *container* has no `.RepoDigests` — that is an image field. The
+   capture instruction had to resolve the container to its image first.
+2. Pulling a multi-arch **tag** records the *index* digest, and `docker manifest inspect`
+   prints only child manifests, never the index's own digest. Comparing the two sets could
+   never match. Fixed by adding `index-digest.txt` from
+   `docker buildx imagetools inspect --format '{{.Manifest.Digest}}'`.
+
+This is the concrete argument for Decision 7: had the deploy been routed to the System-Test
+phase, both defects would have surfaced there as a red, in a session that cannot fix
+anything, and bounced back a whole session later.
+
 ## Verification
 
 AC1 and AC2 are re-run independently by `steward checkpoint` through the land-grade gate,

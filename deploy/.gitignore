@@ -6,3 +6,7 @@ target.env
 dumps/
 *.dump
 *.dump.stderr
+
+# Deploy console logs. They echo the resolved host, compose path and public URL, so a
+# tee'd log is exactly the thing Decision 3 keeps out of a public fork.
+*.log

@@ -111,8 +111,24 @@ hard failure, so neither can pass by finding nothing.
 |---|---|
 | `deploy.log` | the full console output of the deploy run: `deploy/deploy.sh 2>&1 \| tee "$DEVSTEWARD_EVIDENCE_DIR/deploy.log"` |
 | `manifest-inspect.json` | `docker manifest inspect ghcr.io/dr-froehlich/recipes:sha-<sha> > "$DEVSTEWARD_EVIDENCE_DIR/manifest-inspect.json"` |
-| `running-image-digest.txt` | on the host: `docker inspect --format '{{join .RepoDigests "\n"}}' $(docker compose ps -q <app-service>)` |
+| `index-digest.txt` | `docker buildx imagetools inspect --format '{{.Manifest.Digest}}' ghcr.io/dr-froehlich/recipes:sha-<sha>` |
+| `running-image-digest.txt` | on the host, from the **image**, not the container (see below) |
 | `signoff.json` | the human observation, recorded as three booleans (below) |
+
+```sh
+# running-image-digest.txt — a container has no .RepoDigests; resolve to its image first
+cd <compose-dir>
+cid=$(docker compose ps -q web_recipes)
+img=$(docker inspect --format '{{.Image}}' "$cid")
+docker image inspect --format '{{join .RepoDigests "\n"}}' "$img"
+```
+
+`index-digest.txt` looks redundant next to `manifest-inspect.json` and is not. Pulling a
+multi-arch **tag** records the digest of the *index* in the host's `RepoDigests`, whereas
+`docker manifest inspect` prints only the child manifests — never the index's own digest. So
+comparing the host's digest against the child digests alone fails on a perfectly good
+deploy. Both this and the container-vs-image mistake above were found by running the real
+deploy and grading the real evidence, not by reasoning about it.
 
 ```json
 {
