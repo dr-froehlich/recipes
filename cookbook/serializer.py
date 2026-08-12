@@ -577,7 +577,7 @@ class UserPreferenceSerializer(WritableNestedModelSerializer):
         model = UserPreference
         fields = (
             'user', 'image', 'theme', 'nav_bg_color', 'nav_text_color', 'nav_show_logo', 'default_unit', 'default_page',
-            'use_fractions', 'use_kj',
+            'use_fractions', 'use_readable_time', 'use_kj',
             'nav_sticky',
             'ingredient_decimals', 'comments', 'shopping_auto_sync', 'mealplan_autoadd_shopping',
             'food_inherit_default', 'default_delay',

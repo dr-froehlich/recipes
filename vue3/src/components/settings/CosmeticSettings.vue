@@ -31,6 +31,7 @@
 <!--        ></v-select>-->
 
         <v-checkbox :label="$t('Use_Fractions')" :hint="$t('Use_Fractions_Help')" persistent-hint v-model="useUserPreferenceStore().userSettings.useFractions"></v-checkbox>
+        <v-checkbox :label="$t('Use_Readable_Time')" :hint="$t('Use_Readable_Time_Help')" persistent-hint v-model="useUserPreferenceStore().userSettings.useReadableTime"></v-checkbox>
         <v-checkbox :label="$t('Comments_setting')" v-model="useUserPreferenceStore().userSettings.comments"></v-checkbox>
         <v-checkbox :label="$t('left_handed')" :hint="$t('left_handed_help')" persistent-hint v-model="useUserPreferenceStore().userSettings.leftHanded"></v-checkbox>
         <v-checkbox :label="$t('show_step_ingredients_setting')" :hint="$t('show_step_ingredients_setting_help')" persistent-hint v-model="useUserPreferenceStore().userSettings.showStepIngredients"></v-checkbox>

@@ -68,6 +68,7 @@ python manage.py collectstatic      # needed after `yarn build` if not running t
 cd vue3 && yarn install
 yarn dev      # vite dev server on :5173 — start this BEFORE runserver (see django-vite note below)
 yarn build    # builds into cookbook/static/vue3/
+yarn test     # vitest, unit tests for plain TS modules (src/**/*.spec.ts) — added by REQ-003
 ```
 
 ### Tests
@@ -109,6 +110,13 @@ python scripts/generate_api_client.py
 It wipes `apis/`, `models/`, `index.ts` and regenerates from `http://127.0.0.1:8000/openapi/` using the
 custom mustache templates in `vue3/src/openapi/templates`. Any API change (serializer field, viewset action,
 drf-spectacular annotation) requires regenerating, or the frontend types silently drift.
+
+Two traps in this checkout: the script imports `recipes.settings`, so run it with
+`PYTHONPATH=$(pwd)` unless the venv is the ambient interpreter; and the **committed client was
+generated with the enterprise and open-data plugins installed**, which this checkout does not have —
+regenerating without them deletes ~40 plugin model files and two thirds of `apis/ApiApi.ts`. Regenerate,
+then restore everything except the model files your change actually touched (`git checkout --
+vue3/src/openapi` after saving them aside).
 
 ### Translations
 
@@ -229,7 +237,8 @@ build inputs. `plugin.py` and `version.py` at the repo root handle plugin linkin
   (`register(Factory, 'obj_1', space=LazyFixture('space_1'))`, `LIST_URL`/`DETAIL_URL` constants, and the
   `a_u`/`g1_s1`/`u1_s1`/`a1_s1`/`s1_s1` client fixtures covering anonymous/guest/user/admin/superuser in
   two spaces).
-- There is no frontend test suite; vue3 changes are verified manually.
+- The frontend has unit tests for plain TypeScript modules only (vitest, `vue3/src/**/*.spec.ts`);
+  there are no component tests, so vue3 UI changes are still verified manually.
 - Larger features should be discussed before implementation (see `docs/contribute/guidelines.md`);
   contributions require signing the CLA.
 - Docs are mkdocs-material under `docs/` with nav in `mkdocs.yml`.
