@@ -70,9 +70,17 @@ What it does, in this order, stopping at the first failure:
    `docker-compose.override.yml` next to the host's compose file, then `pull` + `up -d`.
    The household's own `docker-compose.yml` is never edited. If an override is already
    there and was not written by this script, the deploy stops rather than clobber it.
-4. **Runs migrations.** `boot.sh` already migrates on container start, so this is usually a
-   no-op; it runs explicitly anyway so the log carries a visible migration step *after* the
-   verified backup.
+4. **Settles migrations.** `boot.sh` migrates on container start, so the script *waits* for
+   that run to finish and then reports the applied migrations; it only issues a `migrate`
+   itself if something is still unapplied (a host that does not migrate on boot). Either way
+   the log carries a visible migration step *after* the verified backup.
+
+   It used to issue an unconditional `migrate` here, on the assumption that boot.sh's run
+   made it a no-op. The first deploy that actually carried a migration (REQ-003) disproved
+   that: both sessions reached the same `ALTER TABLE ... ADD COLUMN`, the explicit one
+   blocked on the lock and then died with `DuplicateColumn`, and the deploy aborted at step
+   4 — with the image, the schema and the site all perfectly fine. A deploy that reports
+   failure over a success is worse than one that fails honestly.
 5. **Reports the version** now running — the baked-in `TANDOOR_VERSION` / `TANDOOR_REF` plus
    the image id and repo digest.
 

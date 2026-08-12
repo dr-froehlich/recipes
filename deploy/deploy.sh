@@ -233,9 +233,18 @@ remote "docker compose pull $DEPLOY_APP_SERVICE"
 remote "docker compose up -d"
 
 # ---------------------------------------------------------------------------------------
-# Step 4 — migrations. boot.sh already runs `manage.py migrate` when the container starts,
-# so this is normally a no-op; it is run explicitly anyway so the deploy log carries a
-# visible, ordered migration step after the verified backup (AC4 reads this log).
+# Step 4 — migrations. boot.sh runs `manage.py migrate` when the container starts, so this
+# step exists to leave a visible, ordered migration record in the deploy log after the
+# verified backup (AC4 reads this log) — and to migrate anyway on a host whose boot.sh does
+# not.
+#
+# It does NOT issue a blind `migrate`. Doing that raced boot.sh's own run on the first
+# deploy that actually carried a migration (REQ-003): both sessions reached
+# `ALTER TABLE ... ADD COLUMN`, the second one blocked on the lock and then died with
+# `DuplicateColumn`, aborting the deploy at step 4 — while the schema, the image and the
+# site were in fact all fine. A deploy that reports failure over a success is worse than
+# one that fails honestly. So: wait for the container's own run to settle, and only migrate
+# if it left something unapplied.
 # ---------------------------------------------------------------------------------------
 step "Step 4/5  Migrations"
 
@@ -250,7 +259,36 @@ for attempt in $(seq 1 30); do
     sleep 2
 done
 
-remote "docker compose exec -T $DEPLOY_APP_SERVICE /opt/recipes/venv/bin/python manage.py migrate --noinput"
+manage() {
+    remote "docker compose exec -T $DEPLOY_APP_SERVICE /opt/recipes/venv/bin/python manage.py $1"
+}
+
+# `showmigrations --plan` marks an unapplied migration with "[ ]". grep -c prints 0 and
+# exits 1 when there is no match, hence the `|| true`.
+pending_migrations() {
+    manage "showmigrations --plan" 2>/dev/null | grep -c '^\[ \]' || true
+}
+
+echo "Waiting for the container's own startup migrations to settle"
+pending=$(pending_migrations)
+for attempt in $(seq 1 60); do
+    [ "$pending" = "0" ] && break
+    sleep 2
+    pending=$(pending_migrations)
+done
+
+if [ "$pending" = "0" ]; then
+    echo "All migrations are applied."
+else
+    echo "$pending migration(s) still unapplied — this host does not migrate on boot, applying them now"
+    manage "migrate --noinput" || die "migrations failed.
+    The verified database dump is intact at $dump.
+    The previously running image was: ${previous_image:-unknown}"
+fi
+
+echo ""
+echo "--- most recently applied cookbook migrations ---"
+manage "showmigrations cookbook" | grep '^ \[X\]' | tail -3 || true
 
 # ---------------------------------------------------------------------------------------
 # Step 5 — report what the host is now running.

@@ -161,6 +161,36 @@ the new one says why in its docstring.
    to `done` waits for validate, because AC4 is `manual`.
 8. Push, so CI builds the arm64 image the System Tester's deploy will pull.
 
+## What the deploy found (and this checkpoint fixed)
+
+The attended deploy was not ceremony. `deploy/deploy.sh` step 4 issued an unconditional
+`manage.py migrate` right after `docker compose up -d`, commented "normally a no-op,
+because boot.sh already migrates on container start". REQ-002's own deploy carried no
+migration, so that assumption had never been tested. REQ-003 carries
+`0243_userpreference_use_readable_time`, and the two runs raced: boot.sh's migration took
+the lock, the script's blocked behind it and then died with
+`psycopg2.errors.DuplicateColumn`, aborting the deploy at step 4.
+
+Nothing was broken by it — the image was running, the column was there, `0243` was recorded
+applied and the site was serving — but the deploy *reported failure over a success*, which
+is the worse of the two directions to be wrong in, and it would have done so on every future
+deploy carrying a migration, including the one the System Tester runs for AC4.
+
+Step 4 now waits for the container's own startup migration to settle (polling
+`showmigrations --plan` for unapplied entries, up to two minutes), migrates explicitly only
+if something is still pending, and prints the last three applied cookbook migrations so the
+log keeps the visible, ordered migration record that REQ-002's AC4 sign-off reads. The
+re-run went through all five steps clean.
+
+What the live host now shows, checked from here rather than assumed:
+
+- running `ghcr.io/dr-froehlich/recipes:sha-b00564cb0…`, `TANDOOR_VERSION`/`TANDOOR_REF` both
+  that commit
+- `cookbook_userpreference.use_readable_time` exists, and all 5 existing preferences
+  backfilled to `true` — the default reached the real database
+- the served bundle contains `useDurationDisplay-*.js`, `useReadableTime` in the store chunk
+  and `Use_Readable_Time` in the Cosmetic-settings chunk
+
 ## What this checkpoint deliberately does not do
 
 AC4 is graded in the System-Test phase, as the REQ's Notes argue: the formatter's real risk
