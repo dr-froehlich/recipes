@@ -119,8 +119,18 @@ Decision 2 said it belongs.
 
 ### Test runner (Decision 4)
 
-`vitest@4.1.10` as a dev-only devDependency, `"test": "vitest run"` — `run`, because bare
-`vitest` watches in a TTY and would hang the gate.
+`vitest@4.1.10` as a dev-only devDependency, and
+`"test": "yarn install --frozen-lockfile --silent && vitest run"`. Two deliberate halves:
+
+- `run`, because bare `vitest` watches in a TTY and would hang the gate.
+- the `yarn install` prefix, because `vue3/node_modules` is gitignored. The engine's capture
+  check (REQ-063) extracts the *recorded commit* into a clean tree and re-runs the named
+  acceptance tests there; a bare `vitest run` exits 127 in that tree, which is exactly the
+  honest answer — AC1 as first written could only pass on a workstation that happened to
+  have run `yarn install`. Self-preparing the dependencies from the committed `yarn.lock`
+  makes the criterion reproducible from the commit alone, and costs about a second once the
+  cache is warm. Rejected: rewriting AC1's `test:` command in the REQ (the criterion was
+  right; its environment assumption was the bug), and committing `node_modules`.
 
 **Fork E — configuration.** A standalone `vue3/vitest.config.ts` (which takes precedence
 over `vite.config.ts`) with just the `@` alias, `environment: 'node'` and
