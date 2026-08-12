@@ -149,7 +149,25 @@ Environment cost, called out in the REQ's Notes: Node ≥ 20.19 (this workstatio
 | AC1 | `vue3/src/utils/duration_utils.spec.ts` (20 cases) | every row of the REQ's format table, the same inputs with the preference off, 0/null/undefined/negative/NaN/Infinity, and that the labels are injected rather than inlined |
 | AC2 | `cookbook/tests/api/test_api_user_preference.py` | the default on a newly created preference, the GET/PATCH round-trip including persistence, and that one user's choice leaves another's alone |
 | AC3 | `cookbook/tests/other/test_openapi_client_fresh.py` | the serializer serves the field **and** both generated models type it, read it and send it — fails in both directions |
-| AC4 | `cookbook/tests/other/test_readable_time_signoff.py` | four booleans in `signoff.json`, graded by `steward validate REQ-003`; skips without `DEVSTEWARD_EVIDENCE_DIR`, hard-fails once it is set |
+| AC4 | `cookbook/tests/other/test_readable_time_signoff.py` | eight transcribed strings in `signoff.json` against the durations they were read from, graded by `steward validate REQ-003`; skips without `DEVSTEWARD_EVIDENCE_DIR`, hard-fails once it is set |
+
+**Fork G — what AC4 observes.** As first written the criterion named a recipe with a
+4320-minute waiting time and a 4320-minute step. No such recipe exists on the instance, which
+would have left the System Tester either inventing one or improvising — and that session
+never sees the diff and cannot change a test, so setting up an observable state is *this*
+session's job. Rewritten against the household's own **Pizza** (working 45, waiting 2400,
+longest step 1440), which already covers both branches that matter: a whole number of hours
+(`40 h`, `24 h`) and hours with a remainder once the card sums the two (`40 h 45 min`).
+
+The grading got stronger in the same edit. Instead of four booleans the tester ticks, the
+evidence carries the three durations and the eight strings actually on screen — four with
+the preference on, four with it off — and the test **recomputes** what each must be, from a
+second implementation of the format rule written in Python rather than a call into the
+TypeScript it is checking. A criterion graded against the code under test passes whatever
+that code happens to do. It also refuses a surface with nothing over an hour on it, since
+below 60 minutes the readable and raw renderings are identical and would prove nothing.
+Verified three ways before landing: correct evidence passes, a card chip left as `2445`
+fails with the exact surface named, and no evidence dir skips.
 
 **Fork F — a second user-preference API test file.** AC2 names
 `cookbook/tests/api/test_api_user_preference.py`; upstream already has
