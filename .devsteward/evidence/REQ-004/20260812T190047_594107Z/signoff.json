@@ -1,0 +1,36 @@
+{
+  "recipe": "Pizza",
+  "timezone": "Europe/Berlin",
+  "ui_language": "en",
+  "step_durations_minutes": [10, 720, 5, 5, 10, 1440, 10, 240, 5, 5],
+  "unset": {
+    "times_row_start": "Set",
+    "step_starts": ["", "", "", "", "", "", "", "", "", ""]
+  },
+  "set": {
+    "finish": "2026-08-15T09:00",
+    "observed_at": "2026-08-12T21:33",
+    "times_row_start": "Tomorrow 16:10",
+    "step_starts": [
+      "Tomorrow 16:10",
+      "Tomorrow 16:20",
+      "Fri 04:20",
+      "Fri 04:25",
+      "Fri 04:30",
+      "Fri 04:40",
+      "Sat 04:40",
+      "Sat 04:50",
+      "Sat 08:50",
+      "Sat 08:55"
+    ]
+  },
+  "cleared": {
+    "times_row_start": "Set",
+    "step_starts": ["", "", "", "", "", "", "", "", "", ""]
+  },
+  "planner": {
+    "meal_plan_from": "2026-08-15T13:00",
+    "observed_at": "2026-08-12T21:35",
+    "times_row_start": "Tomorrow 20:10"
+  }
+}
