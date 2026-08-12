@@ -35,7 +35,9 @@
 
             <v-card-actions>
                 <v-btn color="warning" prepend-icon="$delete" @click="emit('clear'); dialog=false" v-if="props.finish">{{ $t('Clear') }}</v-btn>
-                <v-btn color="save" prepend-icon="$save" @click="emit('confirm', resolvedFinish); dialog=false">{{ $t('Save') }}</v-btn>
+                <!-- "Apply", not "Save": this writes the finish time to the url and nothing else, there is
+                     no persistence anywhere behind it (REQ-004 Decision 3) -->
+                <v-btn color="save" prepend-icon="fa-solid fa-check" @click="emit('confirm', resolvedFinish); dialog=false">{{ $t('Apply') }}</v-btn>
             </v-card-actions>
         </v-card>
 

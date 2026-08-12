@@ -246,7 +246,7 @@
   "Filters": "Filters",
   "Finish": "Finish",
   "FinishTime": "Finish time",
-  "FinishTimeHelp": "Pick when this recipe has to be done. Every step is then given the time it has to start, counted back through the step times.",
+  "FinishTimeHelp": "Pick when this recipe has to be done. Every step is then given the time it has to start, counted back through the step times. The finish time is kept in the page address, so it survives a reload and can be shared as a link, but it is not stored on the recipe.",
   "FinishedAt": "Finished at",
   "First": "First",
   "First_name": "First Name",
