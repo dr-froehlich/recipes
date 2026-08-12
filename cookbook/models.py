@@ -527,6 +527,7 @@ class UserPreference(models.Model, PermissionModelMixin):
     max_owned_spaces = models.IntegerField(default=MAX_OWNED_SPACES_PREF_DEFAULT)
     default_unit = models.CharField(max_length=32, default='g')
     use_fractions = models.BooleanField(default=False)
+    use_readable_time = models.BooleanField(default=False)
     use_kj = models.BooleanField(default=KJ_PREF_DEFAULT)
     default_page = models.CharField(choices=PAGES, max_length=64, default=SEARCH)
     plan_share = models.ManyToManyField(User, blank=True, related_name='plan_share_default')

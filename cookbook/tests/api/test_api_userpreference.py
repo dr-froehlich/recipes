@@ -137,3 +137,47 @@ def test_default_inherit_fields(u1_s1, u1_s2, space_1, space_2):
         reverse(DETAIL_URL, args={auth.get_user(u1_s2).id}),
     )
     assert space_2.food_inherit.all().count() == 0 == len([x['field'] for x in json.loads(r.content)['food_inherit_default']])
+
+
+def test_use_readable_time_defaults_off(u1_s1):
+    user = auth.get_user(u1_s1)
+
+    with scopes_disabled():
+        UserPreference.objects.filter(user=user).delete()
+        preference = UserPreference.objects.create(user=user)
+
+    assert preference.use_readable_time is False
+
+    with scopes_disabled():
+        assert UserPreference.objects.get(user=user).use_readable_time is False
+
+
+def test_use_readable_time_round_trips(u1_s1):
+    user = auth.get_user(u1_s1)
+
+    r = u1_s1.get(reverse(DETAIL_URL, args={user.id}))
+    assert r.status_code == 200
+    assert json.loads(r.content)['use_readable_time'] is False
+
+    r = u1_s1.patch(reverse(DETAIL_URL, args={user.id}), {'use_readable_time': True}, content_type='application/json')
+    assert r.status_code == 200
+    assert json.loads(r.content)['use_readable_time'] is True
+
+    # the write is persisted, not merely echoed back
+    r = u1_s1.get(reverse(DETAIL_URL, args={user.id}))
+    assert json.loads(r.content)['use_readable_time'] is True
+
+    with scopes_disabled():
+        assert UserPreference.objects.get(user=user).use_readable_time is True
+
+
+@pytest.mark.parametrize("value", [True, False])
+def test_use_readable_time_is_per_user(value, u1_s1, u2_s1):
+    user = auth.get_user(u1_s1)
+    other = auth.get_user(u2_s1)
+
+    r = u1_s1.patch(reverse(DETAIL_URL, args={user.id}), {'use_readable_time': value}, content_type='application/json')
+    assert r.status_code == 200
+
+    with scopes_disabled():
+        assert UserPreference.objects.get(user=other).use_readable_time is False
