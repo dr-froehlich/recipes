@@ -106,6 +106,8 @@ import RecipeImage from "@/components/display/RecipeImage.vue";
 import {useRouter} from "vue-router";
 import PrivateRecipeBadge from "@/components/display/PrivateRecipeBadge.vue";
 import {useDurationDisplay} from "@/composables/useDurationDisplay.ts";
+import {DateTime} from "luxon";
+import {serializeFinishTime} from "@/utils/schedule_utils.ts";
 
 const displayDuration = useDurationDisplay()
 
@@ -118,6 +120,7 @@ const props = defineProps({
     linkTarget: {type: String, required: false, default: ''},
     showMenu: {type: Boolean, default: true, required: false},
     servings: {type: Number, required: false},
+    finish: {type: Date, required: false},
 })
 
 const router = useRouter()
@@ -126,6 +129,10 @@ const dest = computed(() => {
     const route: any = { name: 'RecipeViewPage', params: { id: props.recipe.id } };
     if (props.servings !== undefined) {
         route.query = { servings: String(props.servings) };
+    }
+    if (props.finish !== undefined) {
+        // a planned meal is already a finishing time, carry it over so the recipe opens scheduled
+        route.query = { ...route.query, finish: serializeFinishTime(DateTime.fromJSDate(props.finish)) };
     }
     return route;
 })

@@ -7,6 +7,7 @@
                     <span v-else>{{ $t('Step') }} {{ props.stepNumber }}</span>
                 </v-col>
                 <v-col class="text-right">
+                    <span class="text-body-2 text-grey mr-2" v-if="props.startTime"><i class="fas fa-bread-slice fa-fw mr-1"></i>{{ props.startTime }}</span>
                     <v-btn-group density="compact" variant="tonal" class="d-print-none">
                         <v-btn size="small" color="info" v-if="step.time != undefined && step.time > 0" @click="timerRunning = true"><i
                             class="fas fa-stopwatch mr-1 fa-fw"></i> {{ displayDuration(step.time) }}
@@ -78,6 +79,13 @@ const props = defineProps({
     ingredientFactor: {
         type: Number,
         required: true,
+    },
+    // pre formatted by the recipe view, which is what keeps this component unaware of scheduling. The
+    // recursive render of a sub recipes steps below deliberately does not pass it, since the schedule
+    // does not look into sub recipes
+    startTime: {
+        type: String,
+        required: false,
     },
 })
 

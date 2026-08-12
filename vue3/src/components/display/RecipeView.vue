@@ -56,6 +56,14 @@
                                 </recipe-scaling-dialog>
                             </div>
                         </v-col>
+                        <v-col class="pt-1 pb-1">
+                            <div class="cursor-pointer">
+                                <i class="fas fa-bread-slice fa-fw mr-1"></i> {{ overallStartLabel }}<br/>
+                                <div class="text-grey">{{ (props.finish) ? $t('Start') : $t('FinishTime') }}</div>
+                                <bake-schedule-dialog :finish="props.finish" @confirm="(f: DateTime) => emit('update:finish', f)"
+                                                      @clear="emit('update:finish', undefined)"></bake-schedule-dialog>
+                            </div>
+                        </v-col>
                     </v-row>
                 </v-container>
             </v-card>
@@ -110,6 +118,14 @@
                                     </recipe-scaling-dialog>
                                 </div>
                             </v-col>
+                            <v-col>
+                                <div class="cursor-pointer">
+                                    <i class="fas fa-bread-slice fa-fw mr-1"></i> {{ overallStartLabel }}<br/>
+                                    <div class="text-grey">{{ (props.finish) ? $t('Start') : $t('FinishTime') }}</div>
+                                    <bake-schedule-dialog :finish="props.finish" @confirm="(f: DateTime) => emit('update:finish', f)"
+                                                          @clear="emit('update:finish', undefined)"></bake-schedule-dialog>
+                                </div>
+                            </v-col>
                         </v-row>
 
                     </v-card>
@@ -141,8 +157,13 @@
             <steps-overview :steps="recipe.steps" :ingredient-factor="ingredientFactor" @scale="(factor: number) => {servings = recipe.servings * factor}"></steps-overview>
         </v-card>
 
+        <v-alert type="warning" variant="tonal" class="mt-1" :title="$t('ScheduleIncomplete')" v-if="unschedulableStepLabels.length > 0">
+            {{ $t('ScheduleIncompleteHelp', {steps: unschedulableStepLabels.join(', ')}) }}
+        </v-alert>
+
         <v-card class="mt-1" v-for="(step, index) in recipe.steps" :key="step.id">
-            <step-view v-model="recipe.steps[index]" :step-number="index+1" :ingredientFactor="ingredientFactor"></step-view>
+            <step-view v-model="recipe.steps[index]" :step-number="index+1" :ingredientFactor="ingredientFactor"
+                       :start-time="stepStartLabels[index]"></step-view>
         </v-card>
 
         <property-view v-model="recipe" :ingredientFactor="ingredientFactor"></property-view>
@@ -216,9 +237,15 @@ import {useFileApi} from "@/composables/useFileApi.ts";
 import PrivateRecipeBadge from "@/components/display/PrivateRecipeBadge.vue";
 import ModelSelect from "@/components/inputs/ModelSelect.vue";
 import RecipeScalingDialog from "@/components/dialogs/RecipeScalingDialog.vue";
+import BakeScheduleDialog from "@/components/dialogs/BakeScheduleDialog.vue";
 import {useDurationDisplay} from "@/composables/useDurationDisplay.ts";
+import {useStartTimeDisplay} from "@/composables/useStartTimeDisplay.ts";
+import {backChainSchedule, findUnschedulableSteps} from "@/utils/schedule_utils.ts";
+import {useI18n} from "vue-i18n";
 
 const displayDuration = useDurationDisplay()
+const displayStartTime = useStartTimeDisplay()
+const {t} = useI18n()
 
 const {request, release} = useWakeLock()
 const {doAiImport, fileApiLoading} = useFileApi()
@@ -227,6 +254,11 @@ const loading = ref(false)
 const recipe = defineModel<Recipe>({required: true})
 const props = defineProps<{
     servings: {type: Number, required: false},
+    finish?: DateTime,
+}>()
+
+const emit = defineEmits<{
+    'update:finish': [finish: DateTime | undefined]
 }>()
 
 const servings = ref(props.servings ?? recipe.value.servings ?? 1)
@@ -239,6 +271,45 @@ const selectedAiProvider = ref<undefined | AiProvider>(useUserPreferenceStore().
  */
 const ingredientFactor = computed(() => {
     return servings.value / ((recipe.value.servings != undefined) ? Math.max(recipe.value.servings, 1) : 1)
+})
+
+/**
+ * start times of every step, back chained from the finish time, empty while no finish time is set
+ */
+const schedule = computed(() => {
+    if (!props.finish || !recipe.value.steps) {
+        return undefined
+    }
+    return backChainSchedule(props.finish, recipe.value.steps.map(step => step.time))
+})
+
+/**
+ * the overall start of the recipe, or an invitation to set a finish time while there is none
+ */
+const overallStartLabel = computed(() => {
+    return (schedule.value) ? displayStartTime(schedule.value.overallStart) : t('SetFinishTime')
+})
+
+/**
+ * per step start labels, positionally aligned with the step list. Passing these down pre formatted is what
+ * keeps StepView unaware of scheduling, and is what stops a sub recipes nested steps rendering a start
+ * time the schedule never computed for them
+ */
+const stepStartLabels = computed(() => {
+    return (schedule.value) ? schedule.value.stepStarts.map(start => displayStartTime(start)) : []
+})
+
+/**
+ * the steps that make the schedule incomplete, named the way the step headers name them
+ *
+ * only reported while a finish time is set, since with no start times on the page there is nothing that
+ * could be read as authoritative
+ */
+const unschedulableStepLabels = computed(() => {
+    if (!props.finish || !recipe.value.steps) {
+        return []
+    }
+    return findUnschedulableSteps(recipe.value.steps).map(step => step.name || `${t('Step')} ${step.index + 1}`)
 })
 
 /**

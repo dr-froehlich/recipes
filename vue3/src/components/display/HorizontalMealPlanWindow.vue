@@ -81,6 +81,7 @@ import {DateTime} from "luxon";
 import {homePageCols} from "@/utils/breakpoint_utils";
 import ModelEditDialog from "@/components/dialogs/ModelEditDialog.vue";
 import {useRouter} from "vue-router";
+import {serializeFinishTime} from "@/utils/schedule_utils.ts";
 
 const router = useRouter()
 const {name} = useDisplay()
@@ -151,7 +152,11 @@ function clickMealPlan(plan: MealPlan) {
         router.push({
             name: 'RecipeViewPage',
             params: {id: String(plan.recipe.id)},          // keep id in params
-            query: {servings: String(plan.servings ?? '')} // pass servings as query
+            query: {
+                servings: String(plan.servings ?? ''),     // pass servings as query
+                // the planned meal is already a finishing time, carry it over so the recipe opens scheduled
+                finish: serializeFinishTime(DateTime.fromJSDate(plan.fromDate)),
+            }
         })
     }
 }
