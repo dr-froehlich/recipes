@@ -1,0 +1,18 @@
+{
+  "recipe": "Pizza",
+  "working_time_minutes": 45,
+  "waiting_time_minutes": 2400,
+  "step_time_minutes": 720,
+  "observed": {
+    "detail_working_time": "45 min",
+    "detail_waiting_time": "40 h",
+    "list_card_chip": "40 h 45 min",
+    "step_timer_button": "12 H"
+  },
+  "observed_with_preference_off": {
+    "detail_working_time": "45 min",
+    "detail_waiting_time": "2400 min",
+    "list_card_chip": "2445 min",
+    "step_timer_button": "720 MIN"
+  }
+}
