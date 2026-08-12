@@ -12,5 +12,8 @@ steps:
   REQ-002:validate:
     status: done
     updated: '2026-08-06T11:47:48+00:00'
+  REQ-003:develop:
+    status: failed
+    updated: '2026-08-12T09:18:48+00:00'
 decisions: []
-seq: 6
+seq: 7
