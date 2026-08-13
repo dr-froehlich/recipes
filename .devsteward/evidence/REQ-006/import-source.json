@@ -1,0 +1,178 @@
+{
+ "req": "REQ-006",
+ "what": "The source half of AC5, written by the develop session that ran the bulk import. The System Tester never sees the Word collection, so it cannot produce or bend this; it transcribes only what the deployment shows, into signoff.json in the evidence dir.",
+ "commit": "505186e8a8aee23473e8fbc963b9b272db4e3131",
+ "import_log": {
+  "keyword": "Import 5",
+  "imported_recipes": 270,
+  "documents": 298,
+  "skipped": 27,
+  "import_log_counter_field": 271,
+  "duplicates_ignored": [
+   "Trauben-Fenchel-Salat"
+  ],
+  "created_by": "Ingrid",
+  "space": "froehlich",
+  "recipes_before": 3,
+  "recipes_after": 273,
+  "with_image": 225,
+  "folder_keywords": [
+   "Beilagen",
+   "Cocktails",
+   "Dips & Soßen",
+   "Eierspeisen",
+   "Fisch",
+   "Fleisch",
+   "Gemüse",
+   "Kartoffelgerichte",
+   "Kuchen & Süße Gebäckstücke",
+   "Käsespezialitäten",
+   "Nachspeisen",
+   "Nudelgerichte",
+   "Partysnacks",
+   "Plätzchen",
+   "Reisgerichte",
+   "Salate",
+   "Salziges Backen",
+   "Suppen & Eintöpfe",
+   "Süßspeisen",
+   "Vorspeisen"
+  ],
+  "skipped_documents": [
+   "SKIPPED Beilagen/Ausgedruckte Rezepte mit Bild/Spätzle schärra.docx: no ingredients and no instructions",
+   "SKIPPED Dips & Soßen/Sardellen-Mayonnaise.docx: no ingredients and no instructions",
+   "SKIPPED Fisch/Schollenfilet.docx: no ingredients and no instructions",
+   "SKIPPED Fisch/Sushi.docx: no ingredients and no instructions",
+   "SKIPPED Fleisch/Quellender Topf.docx: no ingredients and no instructions",
+   "SKIPPED Fleisch/Rinderschmorbraten.docx: no ingredients and no instructions",
+   "SKIPPED Fleisch/Rindersteak.docx: no ingredients and no instructions",
+   "SKIPPED Kuchen & Süße Gebäckstücke/Donauwelle.docx: no ingredients and no instructions",
+   "SKIPPED Kuchen & Süße Gebäckstücke/Krapfen Hümbs.docx: ingredients are in a table, not a bulleted list",
+   "SKIPPED Kuchen & Süße Gebäckstücke/Krapfen Pflaumenmus.docx: ingredients are in a table, not a bulleted list",
+   "SKIPPED Kuchen & Süße Gebäckstücke/Pistazien-Macarons.docx: no ingredients and no instructions",
+   "SKIPPED Kuchen & Süße Gebäckstücke/Sally Macarons.docx: no ingredients and no instructions",
+   "SKIPPED Nachspeisen/Mousse au chocolat.docx: no ingredients and no instructions",
+   "SKIPPED Neue Rezepte/Gulasch für 10 Personen.docx: no ingredients and no instructions",
+   "SKIPPED Neue Rezepte/Laugenbrezn.docx: ingredients are in a table, not a bulleted list",
+   "SKIPPED Neue Rezepte/Rindfleisch-Pie.docx: ingredients are in a table, not a bulleted list",
+   "SKIPPED Neue Rezepte/Rosmarin-Ciabatta.docx: ingredients are in a table, not a bulleted list",
+   "SKIPPED Neue Rezepte/Sachertorte das große Backen.docx: ingredients are in a table, not a bulleted list",
+   "SKIPPED Neue Rezepte/Walnusskuchen.docx: ingredients are in a table, not a bulleted list",
+   "SKIPPED Partysnacks/Käsestängel.docx: no ingredients and no instructions",
+   "SKIPPED Salate/Krautsalat.docx: no ingredients and no instructions",
+   "SKIPPED Salate/Wurstsalat.docx: no ingredients and no instructions",
+   "SKIPPED Salziges Backen/Feta Cheesecake.docx: ingredients are in a table, not a bulleted list",
+   "SKIPPED Salziges Backen/Muffins-mit-Zitronengras.docx: ingredients are in a table, not a bulleted list",
+   "SKIPPED Salziges Backen/Olivenbrot.docx: no ingredients and no instructions",
+   "SKIPPED Salziges Backen/Zwiebelkuchen.docx: no ingredients and no instructions",
+   "SKIPPED Suppen & Eintöpfe/Omas Kartoffelsuppe.docx: ingredients are in a table, not a bulleted list"
+  ]
+ },
+ "recipes": [
+  {
+   "name": "Königsberger Klopse",
+   "source_document": "Fleisch/Ausgedruckte Rezepte mit Bild/Königsberger Klopse.docx",
+   "top_level_folder": "Fleisch",
+   "servings": 1,
+   "servings_text": "",
+   "component_names": [
+    "Klopse",
+    "Kapernsoße"
+   ],
+   "ingredients": [
+    "500 g gemischtes Hackfleisch (Rind- und Schweinehack)",
+    "1 Brötchen vom Vortag oder 3 Scheiben Toast",
+    "1 Zwiebel",
+    "2-3 eingelegte Sardellen",
+    "1 El Butter",
+    "1 Ei",
+    "Salz",
+    "Pfeffer",
+    "Paprikapulver edelsüß",
+    "750 ml Rinderbrühe",
+    "30 g Butter",
+    "40 g Mehl",
+    "1 Eigelb",
+    "100 ml Sahne",
+    "2 El eingelegte Kapern",
+    "Frisch gepresster Zitronensaft zum Abschmecken"
+   ],
+   "steps": [
+    "Das Brötchen in etwas Wasser einweichen. Die Zwiebel schälen und fein würfeln. Butter in einer Pfanne erhitzen und die Zwiebelwürfel darin glasig dünsten. Abkühlen lassen.",
+    "Die Sardellen fein hacken.",
+    "Hackfleisch, ausgedrücktes Brötchen, Zwiebelwürfel, gehackte Sardellen, Ei, Salz, Pfeffer und Paprika zu einem Fleischteig kneten.",
+    "Mit angefeuchteten Händen Klopse aus dem Fleischteig formen. Wenn die Hände nass sind, werden die Klopse außen schön glatt.",
+    "Die Rinderbrühe in einem flachen Topf aufkochen. Die Klopse vorsichtig in die kochende Brühe geben und bei kleiner Hitze 15-20 Minuten garziehen lassen, aber nicht mehr kochen. Die Klopse sollten dabei knapp mit Brühe bedeckt sein. Die Klopse heraus nehmen und in einer Schüssel warm stellen.",
+    "Die Brühe durch ein Sieb gießen. Für die Soße ½ l Brühe abmessen, restliche Brühe wird nicht benötigt. Die Butter in einem Topf schmelzen lassen. Das Mehl zugeben und darin unter Rühren andünsten. Die heiße Brühe nach und nach in den Topf gießen und dabei kräftig mit dem Schneebesen rühren, damit keine Klümpchen entstehen. Die Soße unter Rühren langsam aufkochen und bei kleiner Hitze etwa 10 Minuten köcheln lassen. Immer wieder umrühren.",
+    "Die Soße vom Herd nehmen. Das Eigelb mit der Sahne verquirlen und die Mischung langsam unter Rühren in die heiße Soße gießen. Achtung: Die Soße nicht mehr kochen lassen, sonst gerinnt das Eigelb!",
+    "Kapern dazugeben, die Soße mit Salz und Zitronensaft abschmecken und über die Klopse geben und servieren.",
+    "Dazu passt Reis und grüner Salat."
+   ],
+   "has_image": true
+  },
+  {
+   "name": "Nussecken (Lilis Rezept)",
+   "source_document": "Kuchen & Süße Gebäckstücke/Ausgedruckte Rezepte mit Bild/Nussecken.docx",
+   "top_level_folder": "Kuchen & Süße Gebäckstücke",
+   "servings": 1,
+   "servings_text": "",
+   "component_names": [
+    "Teig",
+    "Belag"
+   ],
+   "ingredients": [
+    "130 g Butter",
+    "130 g Zucker",
+    "2 Eier",
+    "300 g Mehl",
+    "1 Tl Backpulver",
+    "½ Glas Aprikosenmarmelade",
+    "200 g Butter",
+    "200 g Zucker",
+    "2 Päckchen Vanillezucker",
+    "200 g gemahlene Haselnüsse",
+    "200 g gehackte Walnüsse",
+    "3 El Wasser",
+    "Dunkle Schokoladenglasur"
+   ],
+   "steps": [
+    "",
+    "Aus den Teigzutaten einen Knetteig verarbeiten und diesen auf einem gefetteten oder mit Backpapier belegten Backblech ausrollen. Die Aprikosenmarmelade auf den ausgerollten Teig streichen.",
+    "Den Backofen auf 175°C Ober-/Unterhitze vorheizen.",
+    "Für den Belag die Butter mit dem Zucker und dem Vanillezucker erhitzen, bis der Zucker sich gelöst hat. Die Nüsse zusammen mit dem Wasser unter die Butter-Zucker-Masse rühren. Das Ganze auf den Teig geben und 25 Minuten backen.",
+    "Die Teigplatte gut abkühlen lassen und zunächst in Rechtecke, dann in Dreiecke schneiden. Die Schokoglasur nach Anleitung schmelzen und die Ecken in die Schokoglasur tauchen."
+   ],
+   "has_image": true
+  },
+  {
+   "name": "Käsefondue",
+   "source_document": "Käsespezialitäten/Ausgedruckte Rezepte mit Bild/Käsefondue.docx",
+   "top_level_folder": "Käsespezialitäten",
+   "servings": 4,
+   "servings_text": "Personen",
+   "component_names": [],
+   "ingredients": [
+    "600 g verschiedene Käsesorten (z.B. Greyerzer, Emmentaler, Gouda, Tilsiter)",
+    "1 Knoblauchzehe",
+    "1 El Speisestärke",
+    "Etwas Weißwein",
+    "400 ml Weißwein",
+    "1 Schuss Kirschwasser",
+    "Salz",
+    "Pfeffer",
+    "Muskatnuss (frisch gerieben)",
+    "Baguette"
+   ],
+   "steps": [
+    "Zunächst reibt man den Fonduetopf mit einer geschälten Knoblauchzehe aus.",
+    "In einem Glas rührt man die Speisestärke mit etwas Weißwein glatt.",
+    "Der Weißwein (400 ml) wird in einem Topf erwärmt.",
+    "Die Käsesorten werden gerieben und unter Rühren zum Wein gegeben. Das Ganze sollte nur leicht kochen.",
+    "Die Speisestärke zum Binden hinzufügen. Mit Kirschwasser, Salz, Pfeffer und Muskat würzen.",
+    "Baguette in Scheiben oder gleich in mundgerechte Würfel schneiden.",
+    "Käsefondue in den vorbereiteten Fonduetopf geben und die Würfel mit den Fonduegabeln in den Käse stippen. Dabei darauf achten, dass der Käse nicht am Boden anbrennt."
+   ],
+   "has_image": true
+  }
+ ]
+}
