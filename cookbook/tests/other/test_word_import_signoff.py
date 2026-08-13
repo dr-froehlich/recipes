@@ -22,7 +22,6 @@ The System Tester never sees the collection, so it cannot produce this and canno
 transcribes off the running deployment. Nothing about the source is repeated in it::
 
     {
-      "deployment_url": "https://...",
       "import_keyword": "Import 3",
       "import_keyword_recipe_count": 280,
       "print_subfolder_keyword_search": {"term": "Ausgedruckte", "matches": []},
@@ -50,6 +49,10 @@ none. ``steps`` is the instruction text of each step in the order the page lists
 may be transcribed in full or truncated, since it is graded as a prefix. ``keywords`` is every
 keyword chip on the recipe. ``print_subfolder_keyword_search.matches`` is the result of
 searching the keyword list for the term — an empty list is the passing answer.
+
+Nothing that identifies the deployment goes in the file. The tester reaches it through the
+gitignored ``deploy/target.env``; this evidence is committed to a public repository, and
+REQ-002 Decision 3 keeps the household's hostname and public recipe domain out of it.
 
 The expectations are *recomputed* here from the recorded source rather than compared to
 anything the deployment reports about itself: each ingredient line is put back through

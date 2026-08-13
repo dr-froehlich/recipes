@@ -210,3 +210,76 @@ transcribed from their source documents.
 5. Decide the Chefkoch remedy (re-save vs. follow-on REQ) and record it in the REQ's Notes.
 6. Deploy, bulk import, capture AC5 evidence.
 7. `steward checkpoint REQ-006 develop`.
+
+## Outcome of the corpus run (Decision 9)
+
+Parser over all **342** documents: **280 parsed, 15 refused as table-shaped, 47 yielded
+nothing, 0 crashed**, and `IngredientParser` flagged **none** of the 2680 ingredient lines
+it produced. Integration end to end over the curated zip (see below): **271 recipes, 2639
+ingredients, 1323 steps, 226 photographs, 22 keywords, 0 errors, 0 duplicate names.**
+
+The 22 keywords are the 20 category folders that contributed a recipe plus `Import` /
+`Import 1`. Neither `Ausgedruckte Rezepte mit Bild` nor `… ohne Bild` appears anywhere —
+Fork D's general rule does what Decision 8 asked for, on the real tree.
+
+**What the 47 empty documents are.** 27 are the blank `Allg. Vorlage <category>.docx`
+templates and the `Rezeptecover*.docx` folder covers. 17 are recipes the household created
+and never filled in — `Titel`, a `Zutaten` heading with one empty bullet, a `Zubereitung`
+heading with one empty paragraph, and nothing else (`Krautsalat`, `Rinderschmorbraten`,
+`Mousse au chocolat`, …). 3 are genuinely non-canonical: `Sally Macarons` has no styles at
+all, and `Gulasch für 10 Personen` (in two copies) writes "Zutaten" and "Zubereitung" as
+ordinary body text. Skipping all of them is the right answer; the 17 unfilled stubs are a
+finding for the household, not for the code.
+
+**The operator's curation (Decision 7).** The imported zip holds **298** of the 342: the
+`Ausgewählte Bilder/` and `Food-Fotografie/` folders are excluded because they re-copy
+recipes for photo work, the 25 `Allg. Vorlage` templates because they are not recipes, and
+the root `Rezeptecover.docx` likewise. That removed 35 documents that would have been skipped
+anyway and **9 blank templates that would otherwise have imported as junk recipes** — which
+is the case for curating rather than trusting the empty-document rule alone.
+
+**Two documents lose a sub-heading, no ingredients.** `Rosinenschnecken` and
+`Gemüsepfannkuchen` write one of their `Zutaten für X` lines as ordinary body text instead of
+a heading. Those lines are dropped and their bullets fold into the preceding component, so
+every ingredient still arrives but one component boundary is lost. A style-independent
+fallback would rescue two documents at the cost of Decision 6's "only the canonical style
+profile" — not worth it.
+
+**The Chefkoch remedy (REQ Notes, "Known gap, homed not deferred").** After curation
+**10 distinct documents** remain refused: `Krapfen Hümbs`, `Krapfen Pflaumenmus`,
+`Laugenbrezn`, `Rindfleisch-Pie`, `Rosmarin-Ciabatta`, `Sachertorte das große Backen`,
+`Walnusskuchen`, `Feta Cheesecake`, `Muffins-mit-Zitronengras`, `Omas Kartoffelsuppe`. Ten is
+small enough that the REQ's first remedy wins: **re-save them in Word to the household's own
+convention** — a `Titel`, `Zutaten`/`Zubereitung` headings, bulleted ingredients — and re-run
+the importer on just those. That costs no code, improves the source of truth, and needs no
+follow-on REQ. A second parser profile is recorded as rejected: it would carry a whole
+inverted layout's worth of guessing for ten files that the household can fix in an evening.
+
+## The bulk import (Decision 10)
+
+Deployed `505186e8a` with `deploy/deploy.sh`, whose backup gate took and *verified restorable*
+`deploy/dumps/tandoor-20260813T101030Z.dump` before any migration ran — that dump is the
+rollback for everything below. The import then ran inside the app container against the live
+database, as **Ingrid**, whose collection it is.
+
+| | |
+|---|---|
+| documents offered | 298 |
+| recipes created | **270** |
+| skipped, with a reason in the log | 27 (10 table-shaped, 17 unfilled) |
+| errors | 0 |
+| photographs attached | 225 |
+| category keywords created | 20, no print subfolder among them |
+| recipes in the space | 3 → 273 |
+
+**One deduplication, and a counter that disagrees because of it.** `Trauben-Fenchel-Salat`
+already existed, entered by hand in 2025; the Word document of the same name was created,
+recognised as a duplicate and deleted, leaving the original untouched. That is
+`handle_duplicates` doing its job — but the base class increments `il.imported_recipes`
+*before* calling it, so the `ImportLog.imported_recipes` field reads **271** while the log's
+own summary line reads "Imported 270 recipes." and the Import keyword carries **270**.
+
+The gap is upstream's, not this REQ's, and it is not worth a core patch: the summary line and
+the keyword agree with each other and with reality. AC5's source evidence records the graded
+number as 270 and carries the 271 beside it under `import_log_counter_field`, with the
+duplicate named, so the discrepancy is visible in the record rather than reconciled away.
