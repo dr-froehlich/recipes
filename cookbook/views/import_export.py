@@ -34,6 +34,7 @@ from cookbook.integration.recipesage import RecipeSage
 from cookbook.integration.rezeptsuitede import Rezeptsuitede
 from cookbook.integration.rezkonv import RezKonv
 from cookbook.integration.saffron import Saffron
+from cookbook.integration.word import Word
 from cookbook.models import ExportLog, Recipe
 from recipes import settings
 
@@ -90,6 +91,8 @@ def get_integration(request, export_type):
         return Rezeptsuitede(request, export_type)
     if export_type == ImportExportBase.GOURMET:
         return Gourmet(request, export_type)
+    if export_type == ImportExportBase.WORD:
+        return Word(request, export_type)
 
 
 @group_required('user')

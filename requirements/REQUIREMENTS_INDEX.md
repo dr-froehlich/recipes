@@ -10,6 +10,6 @@ Move a REQ's row in the **same commit** as the REQ frontmatter and the code.
 | REQ-003 | Human-readable durations — render recipe and step times as hours and minutes | DONE | [REQ-003](REQ-003.md) | REQ-001, REQ-002 |
 | REQ-004 | Bake schedule — back-chain step start times from a finish time | DONE | [REQ-004](REQ-004.md) | REQ-001, REQ-002, REQ-003 |
 | REQ-005 | Offer readable durations upstream — a sanitized PR against TandoorRecipes/recipes | OPEN | [REQ-005](REQ-005.md) | REQ-001, REQ-003 |
-| REQ-006 | Word importer — a .docx import path for the household's recipe collection | DRAFT | [REQ-006](REQ-006.md) | REQ-001, REQ-002 |
+| REQ-006 | Word importer — a .docx import path for the household's recipe collection | OPEN | [REQ-006](REQ-006.md) | REQ-001, REQ-002 |
 
 New requirement template: [`_templates/req.md`](_templates/req.md)
