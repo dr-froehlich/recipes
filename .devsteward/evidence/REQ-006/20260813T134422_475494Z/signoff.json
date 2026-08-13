@@ -1,0 +1,94 @@
+{
+  "import_keyword": "Import 5",
+  "import_keyword_recipe_count": 270,
+  "print_subfolder_keyword_search": {"term": "Ausgedruckte", "matches": []},
+  "recipes": [
+    {
+      "name": "Königsberger Klopse",
+      "ingredients": [
+        {"amount": "500", "unit": "g", "food": "gemischtes Hackfleisch"},
+        {"amount": "1", "unit": "Brötchen", "food": "vom Vortag oder 3 Scheiben Toast"},
+        {"amount": "1", "unit": "", "food": "Zwiebel"},
+        {"amount": "2", "unit": "eingelegte", "food": "Sardellen"},
+        {"amount": "1", "unit": "El", "food": "Butter"},
+        {"amount": "1", "unit": "", "food": "Ei"},
+        {"amount": "", "unit": "", "food": "Salz"},
+        {"amount": "", "unit": "", "food": "Pfeffer"},
+        {"amount": "", "unit": "", "food": "Paprikapulver edelsüß"},
+        {"amount": "750", "unit": "ml", "food": "Rinderbrühe"},
+        {"amount": "30", "unit": "g", "food": "Butter"},
+        {"amount": "40", "unit": "g", "food": "Mehl"},
+        {"amount": "1", "unit": "", "food": "Eigelb"},
+        {"amount": "100", "unit": "ml", "food": "Sahne"},
+        {"amount": "2", "unit": "El", "food": "eingelegte Kapern"},
+        {"amount": "", "unit": "", "food": "Frisch gepresster Zitronensaft zum Abschmecken"}
+      ],
+      "steps": [
+        "Das Brötchen in etwas Wasser einweichen. Die Zwiebel schälen und fein würfeln. Butter in einer Pfanne erhitzen und die Zwiebelwürfel darin glasig dünsten. Abkühlen lassen.",
+        "Die Sardellen fein hacken.",
+        "Hackfleisch, ausgedrücktes Brötchen, Zwiebelwürfel, gehackte Sardellen, Ei, Salz, Pfeffer und Paprika zu einem Fleischteig kneten.",
+        "Mit angefeuchteten Händen Klopse aus dem Fleischteig formen. Wenn die Hände nass sind, werden die Klopse außen schön glatt.",
+        "Die Rinderbrühe in einem flachen Topf aufkochen. Die Klopse vorsichtig in die kochende Brühe geben und bei kleiner Hitze 15-20 Minuten garziehen lassen, aber nicht mehr kochen. Die Klopse sollten dabei knapp mit Brühe bedeckt sein. Die Klopse heraus nehmen und in einer Schüssel warm stellen.",
+        "Die Brühe durch ein Sieb gießen. Für die Soße ½ l Brühe abmessen, restliche Brühe wird nicht benötigt. Die Butter in einem Topf schmelzen lassen. Das Mehl zugeben und darin unter Rühren andünsten. Die heiße Brühe nach und nach in den Topf gießen und dabei kräftig mit dem Schneebesen rühren, damit keine Klümpchen entstehen. Die Soße unter Rühren langsam aufkochen und bei kleiner Hitze etwa 10 Minuten köcheln lassen. Immer wieder umrühren.",
+        "Die Soße vom Herd nehmen. Das Eigelb mit der Sahne verquirlen und die Mischung langsam unter Rühren in die heiße Soße gießen. Achtung: Die Soße nicht mehr kochen lassen, sonst gerinnt das Eigelb!",
+        "Kapern dazugeben, die Soße mit Salz und Zitronensaft abschmecken und über die Klopse geben und servieren.",
+        "Dazu passt Reis und grüner Salat."
+      ],
+      "keywords": ["Import 5", "Fleisch"],
+      "image_shown": true
+    },
+    {
+      "name": "Nussecken (Lilis Rezept)",
+      "ingredients": [
+        {"amount": "130", "unit": "g", "food": "Butter"},
+        {"amount": "130", "unit": "g", "food": "Zucker"},
+        {"amount": "2", "unit": "", "food": "Eier"},
+        {"amount": "300", "unit": "g", "food": "Mehl"},
+        {"amount": "1", "unit": "Tl", "food": "Backpulver"},
+        {"amount": "0.5", "unit": "Glas", "food": "Aprikosenmarmelade"},
+        {"amount": "200", "unit": "g", "food": "Butter"},
+        {"amount": "200", "unit": "g", "food": "Zucker"},
+        {"amount": "2", "unit": "Päckchen", "food": "Vanillezucker"},
+        {"amount": "200", "unit": "g", "food": "gemahlene Haselnüsse"},
+        {"amount": "200", "unit": "g", "food": "gehackte Walnüsse"},
+        {"amount": "3", "unit": "El", "food": "Wasser"},
+        {"amount": "", "unit": "", "food": "Dunkle Schokoladenglasur"}
+      ],
+      "steps": [
+        "",
+        "Aus den Teigzutaten einen Knetteig verarbeiten und diesen auf einem gefetteten oder mit Backpapier belegten Backblech ausrollen. Die Aprikosenmarmelade auf den ausgerollten Teig streichen.",
+        "Den Backofen auf 175°C Ober-/Unterhitze vorheizen.",
+        "Für den Belag die Butter mit dem Zucker und dem Vanillezucker erhitzen, bis der Zucker sich gelöst hat. Die Nüsse zusammen mit dem Wasser unter die Butter-Zucker-Masse rühren. Das Ganze auf den Teig geben und 25 Minuten backen.",
+        "Die Teigplatte gut abkühlen lassen und zunächst in Rechtecke, dann in Dreiecke schneiden. Die Schokoglasur nach Anleitung schmelzen und die Ecken in die Schokoglasur tauchen."
+      ],
+      "keywords": ["Import 5", "Kuchen & Süße Gebäckstücke"],
+      "image_shown": true
+    },
+    {
+      "name": "Käsefondue",
+      "ingredients": [
+        {"amount": "600", "unit": "g", "food": "verschiedene Käsesorten"},
+        {"amount": "1", "unit": "", "food": "Knoblauchzehe"},
+        {"amount": "1", "unit": "El", "food": "Speisestärke"},
+        {"amount": "", "unit": "", "food": "Etwas Weißwein"},
+        {"amount": "400", "unit": "ml", "food": "Weißwein"},
+        {"amount": "1", "unit": "Schuss", "food": "Kirschwasser"},
+        {"amount": "", "unit": "", "food": "Salz"},
+        {"amount": "", "unit": "", "food": "Pfeffer"},
+        {"amount": "", "unit": "", "food": "Muskatnuss"},
+        {"amount": "", "unit": "", "food": "Baguette"}
+      ],
+      "steps": [
+        "Zunächst reibt man den Fonduetopf mit einer geschälten Knoblauchzehe aus.",
+        "In einem Glas rührt man die Speisestärke mit etwas Weißwein glatt.",
+        "Der Weißwein (400 ml) wird in einem Topf erwärmt.",
+        "Die Käsesorten werden gerieben und unter Rühren zum Wein gegeben. Das Ganze sollte nur leicht kochen.",
+        "Die Speisestärke zum Binden hinzufügen. Mit Kirschwasser, Salz, Pfeffer und Muskat würzen.",
+        "Baguette in Scheiben oder gleich in mundgerechte Würfel schneiden.",
+        "Käsefondue in den vorbereiteten Fonduetopf geben und die Würfel mit den Fonduegabeln in den Käse stippen. Dabei darauf achten, dass der Käse nicht am Boden anbrennt."
+      ],
+      "keywords": ["Käsespezialitäten", "Import 5"],
+      "image_shown": true
+    }
+  ]
+}
