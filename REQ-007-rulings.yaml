@@ -1,0 +1,74 @@
+# REQ-007 — the whole repair, after your rulings collapsed the per-word list into one rule.
+#
+# THE RULE
+#   1. cut the food phrase at the first "cut" word — everything from there is a note
+#   2. drop the filler words and articles
+#   3. what remains: the food starts at the LAST capitalised token; earlier tokens are notes
+#   4. notes keep capitalised words, de-inflect lowercase adjectives, reduce a grade to its number
+#
+# Everything below is data for that rule. There are no per-adjective entries: geriebener,
+# flüssiger, gehobelte and the 141-word tail all fall out of step 3 with no line of their own.
+#
+# Comment freely — I read the whole file.
+
+# ── where a note begins ──────────────────────────────────────────────────────
+# "Butter für die Form" -> Butter · für die Form
+cut_words: [für, zum, zur, von, vom, mit, ohne, in, aus, nach, auf, bei,
+            oder, und, je, pro, am, als, typ, type]
+
+# ── words that say nothing about what to buy ─────────────────────────────────
+# "Etwas Wasser" -> Wasser        (ruled: drop, no note)
+drop_words: [etwas, je, verschiedene, verschiedener, verschiedenes, einige, eventuell,
+             ca, "ca.", evtl, "evtl.",
+             ein, eine, einer, eines, einem, einen, der, die, das, den, dem, des]
+
+# ── what counts as a unit ────────────────────────────────────────────────────
+# Anything NOT in here that sits in the unit slot is either an adjective (-> note)
+# or a noun (-> rejoins the food). This list is what makes that decision.
+known_units: [g, kg, mg, ml, l, cl, dl, cm,
+              El, Tl, Msp, Prise, Bund, Becher, Päckchen, Pck, Schuss, Dose, Würfel,
+              Scheibe, Scheiben, Glas, Zweig, Zweige, Stiel, Stiele, Stängel, Handvoll,
+              Messerspitze, Messerspitzen, Beutel, Flasche, Fläschchen, Blatt, Blätter,
+              Tropfen, Knolle, Paar, Streifen, Spitzer, Schnapsglas,
+              Stück, Stange, Stangen, Tasse, Portion, Portionen]
+
+# ── spellings of the same unit ───────────────────────────────────────────────
+unit_aliases:
+  EL: El
+  TL: Tl
+  tl: Tl
+  Esslöffel: El          # was missing, cost "1 gehäufter Esslöffel …" its unit
+  Teelöffel: Tl          # likewise
+  "Msp.": Msp
+  "Pck.": Pck
+  Dosen: Dose
+  Liter: l
+
+# ── vague measures made metric ───────────────────────────────────────────────
+unit_conversions:
+  Tasse: [180, ml]       # ruled: ½ Tasse = 90 ml
+
+# ── names the rule must not split ────────────────────────────────────────────
+# Crème fraîche needs no entry — the rule already leaves it whole.
+keep_whole:
+  - Wiener Würstchen     # ruled
+  - Paprikapulver edelsüß  # adjective sits after the noun, where the rule cannot see it
+  - Weizenmehl Typ 550
+
+# ── the same food written two ways ───────────────────────────────────────────
+food_aliases:
+  Avocados: Avocado
+
+# ── de-inflection exceptions ─────────────────────────────────────────────────
+# Mechanical ending-stripping gets these wrong.
+deinflect_overrides:
+  saure: sauer
+  hohe: hoch
+  rote: rot
+
+# ── open: the four failures the prototype left ───────────────────────────────
+# Each needs a fix or an explicit exception during develop; none may pass silently.
+#   "5–6 säuerliche Äpfel (z.B. Braeburn)"  -> food "Braeburn)"   range + parenthetical collide
+#   "Mark von 1 Vanilleschote"              -> food "Mark"        parser transposed it first
+#   "1050er Weizen- oder Dinkelmehl"        -> two flours in one line, no single food
+#   "1 gehäufter Teelöffel Salz"            -> fixed above by the Teelöffel alias
