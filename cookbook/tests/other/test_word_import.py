@@ -158,13 +158,15 @@ def test_zip_import_creates_recipes_with_folder_keywords(u1_s1):
 
         first = [(i.food.name, i.unit.name if i.unit else None, float(i.amount), i.note) for i in steps[0].ingredients.all().order_by('pk')]
         assert first == [
-            ('Weizenmehl', 'g', 375.0, '550er'),
+            ('Weizenmehl', 'g', 375.0, '550'),
             ('Backpulver', 'Tl', 1.0, ''),
             ('Butter', 'g', 130.0, ''),
-            ('Eier', None, 2.0, ''),
+            ('Ei', None, 2.0, ''),
         ], 'the recipe ingredients hang off its first step, split into Food, Unit and note'
+        # the grade, the plural and the adjective are REQ-007's repairs at work: this
+        # importer no longer stores what IngredientParser alone makes of a German line
         assert [str(i.food)
-                for i in steps[3].ingredients.all().order_by('pk')] == ['gemahlene Haselnüsse', 'Wasser'], "the component's ingredients hang off the component's first step"
+                for i in steps[3].ingredients.all().order_by('pk')] == ['Haselnüsse', 'Wasser'], "the component's ingredients hang off the component's first step"
 
         assert nussecken.image, 'the embedded photograph was attached'
         assert nussecken.servings == 4 and nussecken.servings_text == 'Personen'

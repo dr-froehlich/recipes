@@ -9,6 +9,7 @@ from django_scopes import scope
 from cookbook.helper.ingredient_parser import IngredientParser
 from cookbook.helper.word_parser import WordDocumentSkipped, parse_docx
 from cookbook.integration.integration import Integration
+from cookbook.integration.word_repairs import prepare_line, repair
 from cookbook.models import Ingredient, Keyword, Recipe, Step
 
 
@@ -162,17 +163,22 @@ class Word(Integration):
                 order += 1
 
             for line in component.ingredients:
-                amount, unit, food, note = ingredient_parser.parse(line)
-                first_step.ingredients.add(
-                    Ingredient.objects.create(
-                        food=ingredient_parser.get_food(food),
-                        unit=ingredient_parser.get_unit(unit),
-                        amount=amount,
-                        note=note,
-                        original_text=line,
-                        space=self.request.space,
+                # REQ-007: the household writes German, where the token after the amount is
+                # usually an adjective rather than a unit. prepare_line runs before parsing
+                # because its two fixes change how the line tokenises; repair runs after it,
+                # where what the parser made of each token is known rather than guessed.
+                for prepared in prepare_line(line):
+                    amount, unit, food, note = repair(prepared, *ingredient_parser.parse(prepared))
+                    first_step.ingredients.add(
+                        Ingredient.objects.create(
+                            food=ingredient_parser.get_food(food),
+                            unit=ingredient_parser.get_unit(unit),
+                            amount=amount,
+                            note=note,
+                            original_text=prepared,
+                            space=self.request.space,
+                        )
                     )
-                )
 
         folder = self.top_level_folder(path)
         if folder:
