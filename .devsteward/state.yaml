@@ -1,7 +1,7 @@
 version: 1
 profile: req
 cursor:
-  step: REQ-007:develop
+  step: REQ-007:validate
 steps:
   REQ-001:develop:
     status: done
@@ -36,5 +36,13 @@ steps:
   REQ-007:develop:
     status: done
     updated: '2026-08-14T07:22:50+00:00'
+  REQ-007:validate:
+    status: blocked-on-decision
+    updated: '2026-08-14T10:29:12+00:00'
+    hold: "REQ-007 validation red — needs a human:\ndeclined by Peter Froehlich\n\n\
+      Pick the edge that fits the root cause: if the develop was hollow, return it
+      to develop for a fix with `steward rework REQ-007`; if an external lab/setup
+      issue was fixed and the develop stands, re-run the validation only with `steward
+      revalidate REQ-007`."
 decisions: []
-seq: 19
+seq: 21
