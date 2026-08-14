@@ -273,25 +273,26 @@ RANGE_DASH = re.compile(r'(?<=[\d½¼¾])\s*[–—]\s*(?=[\d½¼¾])')
 #: which the unit repair below turns into a note without touching the food.
 RANGE_DASH_BLOCKED = re.compile(r'[()]')
 
-#: 'Je 1 rote und gelbe Paprika' is two ingredients written as one line.
-JE_LINE = re.compile(r'^je\s+(?P<amount>[\d.,/½¼¾]+)\s+(?P<first>\S+)\s+und\s+(?P<second>\S+)\s+(?P<rest>\S.*)$', re.IGNORECASE)
+#: 'Je 1 rote und gelbe Paprika' is two ingredients written as one line, and 'Je 1 gelbe,
+#: grüne und rote Paprika' is three. Each variant is a single word, which is what keeps
+#: 'Je 200 g Mehl und Zucker für den Teig' - where the two nouns do not share a qualifier -
+#: out of this.
+JE_LINE = re.compile(r'^je\s+(?P<amount>[\d.,/½¼¾]+)\s+(?P<head>\S+(?:,\s+\S+)*)\s+und\s+(?P<last>\S+)\s+(?P<rest>\S.*)$', re.IGNORECASE)
 
 #: Punctuation a token may carry that must not decide whether it is a cut or drop word.
 EDGE_PUNCTUATION = ',;:.'
 
 
 def prepare_line(line):
-    """The two fixes that have to happen before tokenising. Returns one line or two."""
+    """The two fixes that have to happen before tokenising. Returns one line per variant."""
     prepared = line.strip()
     if not RANGE_DASH_BLOCKED.search(prepared):
         prepared = RANGE_DASH.sub(' - ', prepared)
 
     match = JE_LINE.match(prepared)
     if match:
-        return [
-            f'{match.group("amount")} {match.group("first")} {match.group("rest")}',
-            f'{match.group("amount")} {match.group("second")} {match.group("rest")}',
-        ]
+        variants = [part.strip() for part in match.group('head').split(',')] + [match.group('last')]
+        return [f'{match.group("amount")} {variant} {match.group("rest")}' for variant in variants]
     return [prepared]
 
 
@@ -409,7 +410,12 @@ def _repair_food(food, line):
     if start is None:
         return food, []
 
-    return ' '.join(tokens[start:]), [_as_note(token) for token in tokens[:start]] + notes
+    repaired = ' '.join(tokens[start:])
+    if _plain(repaired) in DROP_WORDS | CUT_PREPOSITIONS | CUT_CONJUNCTIONS:
+        # a word the lists call filler is never the answer, however it got capitalised
+        return food, []
+
+    return repaired, [_as_note(token) for token in tokens[:start]] + notes
 
 
 def _in_written_order(tokens, line):

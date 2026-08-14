@@ -147,6 +147,17 @@ def test_ranges_and_je_lines_are_fixed_before_parsing():
         (1, None, 'Paprika', 'gelb'),
     ]
 
+    # the collection writes the same shape with three variants too
+    assert repaired('Je 1 gelbe, grüne und rote Paprika') == [
+        (1, None, 'Paprika', 'gelb'),
+        (1, None, 'Paprika', 'grün'),
+        (1, None, 'Paprika', 'rot'),
+    ]
+
+    # but 'Je' in front of two foods that share only an amount is not that shape, and a
+    # variant is always one word: this line stays one ingredient
+    assert len(repaired('Je 2 El gemahlene Gewürze und Salz für die Brühe')) == 1
+
 
 def test_a_repair_never_makes_a_line_worse():
     """AC5 — leaving a line alone is always available, and is what happens when in doubt."""
