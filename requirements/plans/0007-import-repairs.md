@@ -280,3 +280,168 @@ spelling the two-variant split did not match, on a line the parser had already t
 was fixed (`b8ba3903b`), the rule now refuses to end on a word its own lists call filler, and
 the deploy and re-import were run again from the top. That is the case for Decision 10 making
 the corpus run a develop obligation: no synthetic fixture would have written that line.
+
+---
+
+# The rework — 2026-08-14, after the sign-off was declined
+
+Everything above describes the **first** implementation, which reached the deployment and was
+then declined at AC7. It is kept as written because the reasoning is still the record of how
+the rule got built, and because most of the machinery survived. What changed is the seam.
+
+## What was wrong, and how it was missed
+
+The owner declined on the grounds of the specification, not the code. The rule the REQ froze —
+*the food is the last capitalised noun; everything that qualifies it becomes a note* — was
+checked against the ingredient editor, where a note is visible beside its row, and never
+against the surface that matters:
+
+> `vue3/src/components/display/ShoppingLineItem.vue` does not mention `note`.
+> **The shopping list renders amount, unit and food. Nothing else.**
+
+`shopping_helper.py` confirms the other half: nothing in it looks at a note either. So
+`Paprika` noted *rot* is a shopping list that says "Paprika", and the repair was busy moving
+the buying distinctions into the one field that never reaches the shop. The first rule was
+optimising for a small food list — 844 foods down to 577 was its headline — and a small food
+list was never the goal. Losing nothing was.
+
+The failure mode is worth naming for the next REQ that touches display data: *the criterion
+was graded on the field being populated, not on the field being read by anyone.* AC7 clause (b)
+even asked for "the type in the note", so the sign-off would have passed a shopping list that
+said "Weizenmehl" for all nine flours.
+
+## The new seam
+
+> The food is what you buy, written out in full. What you *do* with it — and how you judge it
+> at the shelf — becomes a note.
+
+Eight questions were put to the owner and all eight ruled, in two rounds. They are Decisions
+13–16 in the REQ. The one that reshapes the code is **Decision 13**: the default flipped from
+*note* to *keep*. An adjective in no list now stays with the food, de-inflected and written
+after the noun. That is what makes the rule safe — the failure it just shipped is impossible by
+construction, because nothing is dropped unless a list says to drop it.
+
+The lists therefore changed shape rather than size. Before, the closed lists said what to
+*keep*; now they say what to *move*:
+
+| list | before | after |
+|---|---|---|
+| cut prepositions | 26, including `typ` | 24; `typ` left because a grade belongs in the name |
+| extraction nouns | — | **new**: `Saft`, `Schale`, `Abrieb`, `Mark`, … |
+| condition words | — | **new**: `reif`, `alt`, `weich`, `frisch`, `groß`, `gehäuft`, … |
+| product forms | — | **new**: the participles that name something *sold* that way |
+| keep-whole | 6 | 6, but different — a post-nominal adjective now needs no entry, and `Crème fraîche` gained one only to keep the food tree from hanging it under `Crème` |
+
+There is still **no adjective list**, which was Decision 2's whole claim. A participle is caught
+by shape (`ge-…-t/-en`), and every other qualifier is kept. The 141-word tail still needs no
+entries — it just falls out on the other side now.
+
+## Three things the rework had to add
+
+**A word in the unit slot is no longer classified there.** `_repair_unit` used to decide that a
+lowercase non-unit was an adjective and note it. That is exactly how `1 rote Paprika` lost its
+colour. It now hands the word back to the front of the food phrase, and the food repair — the
+only code that knows whether a qualifier belongs in the name or the note — decides.
+
+**Qualifiers have to be recovered out of the parser's own notes.** `200 g Weizenmehl (550er)`
+arrives with the grade already in a note, and `5–6 säuerliche Äpfel (z.B. Braeburn)` arrives
+with `säuerliche` there. Both belong in the name now. Only two shapes are taken back — a bare
+grade, and a single stranded lowercase qualifier — because a note with anything more in it is
+the household saying something, and the food name is not the place for it.
+
+**Capitalisation stops being decisive at the head of a line.** The household capitalises the
+first word whatever it is, so `Abgeriebene Schale einer Zitrone` and `Frische oder getrocknete
+Petersilie` open with adjectives that look like nouns. `_is_adjective` settles it by shape
+instead: lowercase is decisive, and a capitalised token counts as a qualifier only if it is a
+participle or a word the lists already name. `Rote Bete` and `Wiener Würstchen` survive that
+test because `rot` and `wien` are in no list.
+
+## The food tree (Decision 16)
+
+Naming a food in full is what makes the shopping list useful and what multiplies the food list.
+The owner asked what a tree parent actually buys before ruling, and the honest answer is two
+things and not a third:
+
+- **`substitute_children`**, evaluated live by `get_substitute_onhand` (`serializer.py:898`) —
+  having `Weizenmehl 1050` on hand satisfies a recipe asking for plain `Weizenmehl` in the
+  make-now filter. Entirely a read-time query; nothing is baked into the import.
+- **Inheritance of `supermarket_category` / `ignore_shopping`** down the tree
+  (`models.py:877-896`) — the shop aisle is set once on `Paprika`.
+- **Not shopping-list roll-up.** `shopping_helper.py` never touches descendants. The qualified
+  foods remain separate shopping rows, which is correct: they are separate purchases.
+
+The importer therefore writes exactly two durable things per parent — the tree edge and one
+boolean — and both are ordinary Food fields the owner can change in the editor. Ruled: create
+the parent even when no line names the bare noun, and do **not** warn about any of it.
+
+Noun-first names make the parent a first-token split rather than a guess, which is why
+`food_parent` is nine lines and not a heuristic. A second capitalised token means the name is a
+name, and it stays at the root.
+
+## What the acceptance block became
+
+| AC | before | after |
+|---|---|---|
+| AC1 | the rulings the first rule was derived from | the *keep* default, and the four ways a qualifier reaches a note |
+| AC2 | displaced unit, displaced food | + the extraction phrases, + the spelled-out unit |
+| AC3 | grade in the note | grade in the **name**; three spellings meet as one food per grade |
+| AC4 | unchanged in substance | the `Je` variants now carry their colour in the food name |
+| AC5 | byte-identity on an unchanged set | + **no qualifier is lost**, over every line the module names |
+| AC6 | unchanged in substance | expectations rewritten to the new seam |
+| AC7 | — | **new**: the food tree |
+| AC8 | was AC7 | food-count ceiling **removed** — a flour is now correctly several foods, and the old clause (b) would have graded this fix as a failure |
+
+AC5 is the criterion that carries the lesson. Byte-identity alone could not have caught the
+declined behaviour, because the first implementation *was* byte-identical on every line it was
+graded against. The new clause asserts the thing that actually matters: for every line the test
+module names, each qualifying word the source carried is still present afterwards — in the food
+name or in the note.
+
+## What the corpus run made of the rework
+
+342 documents, 2680 raw ingredient lines, 62 documents skipped (the photo folders and the
+lines-only files the importer already declines to guess at).
+
+| | first implementation | after the rework |
+|---|---|---|
+| distinct foods | 500 | **593** |
+| distinct units | 33 | **33** |
+| units the repair file does not name | 0 | **0** |
+| malformed food names | — | **2**, both from malformed source lines |
+| food-tree parents | — | **87** |
+
+The food count going *up* is the trade being paid, not a regression: `Weizenmehl 1050`,
+`Weizenmehl 550` and `Weizenmehl 405` are three foods on purpose, gathered under one parent.
+
+Six things only the corpus could have found, all fixed here:
+
+1. **`_in_written_order` collapsed repeated tokens.** Every occurrence of a word claimed the
+   same position, so `130 g Margarine und etwas Margarine zum Fetten der Form` sorted both
+   Margarines to the front and stranded the conjunction behind them, yielding the food
+   `Margarine Margarine und`. Each occurrence now claims its own place.
+2. **The parser reads through brackets.** It takes an amount and a unit *out* of a
+   parenthetical and hands back the remainder — `½ Bund Thymian (es geht auch 1 El
+   getrockneter Thymian)` arrives as *one El* of `½ Bund Thymian`. Two fixes: the line's own
+   leading quantity wins (`_leading_quantity`), and the bracket is read verbatim off the line
+   (`_parenthetical_note`). That line now yields 0,5 Bund Thymian noted exactly what the
+   household wrote — and `(z.B. Braeburn)`, which the parser discards entirely, comes back too.
+   Decision 17.
+3. **Participles without `ge-`.** `halbiert`, `entsteint`, `passiert`, `zerstoßen` are all past
+   participles that the `ge-…-t/-en` shape misses. The pattern now also matches the unstressed
+   prefixes (`be`, `ent`, `er`, `ver`, `zer`, …) and the `-ieren` verbs — which promptly showed
+   that `passiert` and `mariniert` are product forms and belong in the food name.
+4. **`z.B.` never matched its own cut word.** `_plain` strips the trailing dot, so the token
+   arrives as `z.b` while the list held `z.b.`. One missing entry, and every `z.B.` line kept
+   its examples in the food name.
+5. **A stranded unit can sit behind an amount.** `1 – 1 ½ kg säuerliche Äpfel` left `kg` at
+   index 2 of the food phrase, past a fixed two-token search, producing the food
+   `Apfel kg säuerlich`. The search now walks past bare numbers and adjectives and stops at the
+   first noun.
+6. **A half is written two ways.** `Saft einer halben Zitrone` has no digit in it at all, so
+   the parser found no amount. `halbe` is now read as 0,5 — the same value the digit spelling
+   gives — which is what makes it agree with `Zitrone, Saft von 1/2`.
+
+Two lines are left malformed, both because the *source* line is: a bulleted paragraph
+consisting of the single character `1`, and a truncated line whose bracket is never closed
+(`250 ml warmes Wasser (besser noch alkoholfreies`). Both belong to REQ-006's known class of
+paragraphs that are prose accidentally bulleted in Word, and no criterion grades them.

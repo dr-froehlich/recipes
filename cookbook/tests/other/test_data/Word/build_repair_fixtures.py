@@ -26,7 +26,8 @@ from build_fixtures import bulleted, photograph, save  # noqa: E402  (needs HERE
 
 
 def hefezopf():
-    """Grades, the spelled-out unit, the conversion, a displaced noun, a range, drop words."""
+    """Grades and the tree, the spelled-out unit, the conversion, a displaced noun, a range,
+    drop words, a condition, a product form, and an extraction phrase."""
     document = docx.Document()
     document.add_paragraph('Hefezopf', style='Title')
 
@@ -41,6 +42,9 @@ def hefezopf():
         '4–6 Eier',
         '1 Eigelb zum Bestreichen',
         '200 g Weizenmehl (550er)',
+        '100 g weiche Butter',
+        '200 g gemahlene Mandeln',
+        'Abgeriebene Schale einer Zitrone',
     ):
         bulleted(document, line)
 
@@ -52,7 +56,8 @@ def hefezopf():
 
 
 def wurstsalat():
-    """Adjectives in the unit slot, both spellings of one food and one unit, keep-whole, Je."""
+    """Adjectives in the unit slot, both spellings of one food and one unit, keep-whole, Je,
+    an unlisted qualifier kept, a post-nominal adjective, and a choice of qualifiers."""
     document = docx.Document()
     document.add_paragraph('Wurstsalat mit Avocado', style='Title')
 
@@ -67,6 +72,9 @@ def wurstsalat():
         '2 Tomaten',
         'Saft einer Limette',
         '200 g geriebener Käse',
+        '200 g körniger Frischkäse',
+        '1 TL Paprikapulver edelsüß',
+        'Frische oder getrocknete Petersilie',
         'Öl für die Form',
     ):
         bulleted(document, line)

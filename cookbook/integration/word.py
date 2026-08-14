@@ -9,8 +9,8 @@ from django_scopes import scope
 from cookbook.helper.ingredient_parser import IngredientParser
 from cookbook.helper.word_parser import WordDocumentSkipped, parse_docx
 from cookbook.integration.integration import Integration
-from cookbook.integration.word_repairs import prepare_line, repair
-from cookbook.models import Ingredient, Keyword, Recipe, Step
+from cookbook.integration.word_repairs import food_parent, prepare_line, repair
+from cookbook.models import Food, Ingredient, Keyword, Recipe, Step
 
 
 class Word(Integration):
@@ -131,6 +131,36 @@ class Word(Integration):
             traceback.print_exc()
             self.handle_exception(e, log=il, message=f'-------------------- \nERROR IMPORTING {path}\n{e}\n--------------------\n')
 
+    def resolve_food(self, ingredient_parser, name):
+        """The Food row for a repaired name, hung under its head noun in the food tree.
+
+        REQ-007's rework writes a food out in full - ``Weizenmehl 1050``, ``Paprika rot`` -
+        because Tandoor's shopping list renders the food and never the note. That is right for
+        the shop and it multiplies the food list, so the qualified names are parented under
+        the bare noun, which is what makes ``substitute_children`` mean "any flour I have
+        stands in for plain Weizenmehl" in the make-now filter.
+
+        Two writes and no more: the tree edge, and the flag on the parent. Both are ordinary
+        Food fields the owner can change in the editor afterwards; nothing about substitution
+        is baked into the Ingredient rows, which are still resolved by name alone.
+        """
+        food = ingredient_parser.get_food(name)
+        parent_name = food_parent(name)
+        if food is None or not parent_name or food.get_parent() is not None:
+            return food
+
+        parent = ingredient_parser.get_food(parent_name)
+        if parent is None or parent.pk == food.pk:
+            return food
+
+        if not parent.substitute_children:
+            parent.substitute_children = True
+            parent.save()
+
+        food.move(parent, 'sorted-child' if Food.node_order_by else 'last-child')
+        # move() goes through raw SQL, so the in-memory row is stale afterwards
+        return Food.objects.get(pk=food.pk)
+
     def create_recipe(self, parsed, path):
         recipe = Recipe.objects.create(
             name=parsed.name[:Recipe._meta.get_field('name').max_length],
@@ -171,7 +201,7 @@ class Word(Integration):
                     amount, unit, food, note = repair(prepared, *ingredient_parser.parse(prepared))
                     first_step.ingredients.add(
                         Ingredient.objects.create(
-                            food=ingredient_parser.get_food(food),
+                            food=self.resolve_food(ingredient_parser, food),
                             unit=ingredient_parser.get_unit(unit),
                             amount=amount,
                             note=note,
