@@ -183,10 +183,9 @@ read alike once they meet as one food. So:
 | `Mark von 1 Vanilleschote` → `Mark` | **fixed** — by the written-order reordering above |
 | `1050er Weizen- oder Dinkelmehl` names two flours | **exception** — resolves to `Dinkelmehl` noted `1050 Weizen- oder`. One line in the collection; no rule can pick one of two foods, and both are named in the note where a human can see them |
 
-Two residuals this session adds, both single lines, both left deliberately: `1 gelbe und 1 rote
-Paprika` (the `Je X und Y` split handles the household's own spelling of this, not this one) and
-`Saft von 1-2 Orangen (100 ml)`, where a range, a parenthetical and the parser's transposition
-all land on one line.
+One residual this session adds, a single line, left deliberately: `1 gelbe und 1 rote Paprika`,
+which names two variants without the `Je` the split keys on. It resolves to one `Paprika` noted
+`gelb 1 und rot`, so both colours are visible in the row rather than lost.
 
 ## Tests
 
@@ -219,14 +218,65 @@ another REQ's landed test deserves to be visible.
 1. `word_repairs.py` + the `word.py` hook.
 2. Corpus run over all 342 documents; iterate the lists until the yield is right.  *(done: the
    table above)*
-3. Fixtures, AC1–AC6, and the AC7 harness; `steward gate REQ-007 develop` green.
-4. Deploy this commit, restore the pre-import dump, re-import, capture AC7's evidence.
+3. Fixtures, AC1–AC6, and the AC7 harness; `steward gate REQ-007 develop` green.  *(done)*
+4. Deploy this commit, restore the pre-import dump, re-import, capture AC7's evidence.  *(done
+   twice — see below)*
 5. `steward checkpoint REQ-007 develop`.
 
 ## The re-import (Decision 9)
 
-Recorded after the run — see *Outcome* below.
+Deployed `b8ba3903b` with `deploy/deploy.sh`, whose backup gate took and *verified restorable*
+`deploy/dumps/tandoor-20260814T065442Z.dump` before anything else — that dump is the rollback
+for the state this REQ replaced, and `tandoor-20260813T101030Z.dump` (REQ-006's own deploy gate,
+taken before its bulk import) is what was restored. The app container was stopped for the
+restore, so nothing held a connection while the schema was replaced; there are no migrations
+between the two commits, so the restored database is the schema the new image expects. The
+import then ran inside the app container against the live database, as **Ingrid**, whose
+collection it is.
 
-## Outcome of the live re-import
+| | |
+|---|---|
+| documents offered | 288 |
+| recipes created | **270** |
+| skipped, with a reason in the log | 17 (all unfilled documents) |
+| errors | 0 |
+| recipes in the space | 3 → 273 |
+| units in the space | 6 → 35 → **33** after the merge below |
+| foods in the space | 21 → **505** |
 
-_(filled in by the session after step 4)_
+**The zip is 288 documents, not REQ-006's 298.** Decision 12 declines the ten table-shaped
+Chefkoch documents permanently, and the operator's zip is where that is realised: they are left
+out rather than offered and refused. They were identified by running the parser over the
+collection, not by a hand-written list, so the exclusion is reproducible.
+
+**Two hand-entered units were merged (owner ruled 2026-08-14).** The restore brought back the
+three recipes the household entered by hand before REQ-006, and with them `EL` (2 rows) and
+`Prise(n)` (1 row) — spellings the repair file does not name, which would have failed AC7's
+clause (a) on data that predates this REQ. Ruled: merge them into `El` and `Prise`, using the
+same relation walk `MergeMixin.merge` does. Three ingredient rows changed their unit; amounts
+and foods were untouched.
+
+**The counter that disagrees, again.** As in REQ-006, `ImportLog.imported_recipes` reads 271
+while the log's summary line and the `Import 5` keyword both say 270 — the base class
+increments before `handle_duplicates` deletes the duplicate (`Trauben-Fenchel-Salat`, entered
+by hand in 2025 and re-created by the import). AC7 grades the 270; the 271 is recorded beside
+it in the evidence.
+
+## Outcome, as the deployment now holds it
+
+| AC7 clause | what is live |
+|---|---|
+| (a) every unit is a known unit, at most half of what REQ-006 left | **33 units**, every one named by the repair file, against 99 before — under the half-of-99 bar and well under the 105 the REQ quotes |
+| (b) the flours are at most three foods, grade in the note | `Weizenmehl`, `Roggenmehl`, `Dinkelmehl` — one row each, no digit in any food name. The other `…mehl` foods are `Mehl`, `Weizenvollkornmehl` and `Pizzamehl`, all genuinely different flours (the last from a hand-entered recipe) |
+| (c) the recipe count matches the import log | 270 under `Import 5`, and the log's summary line says the same |
+| (d) three named recipes match the repair file | verified from the database before the evidence was written: `Bauernbrot mit Buttermilch` (8 rows), `Scharfes Curryhähnchen aus dem Wok` (13 rows from 12 lines — the `Je` line is two ingredients), `Makkaroni mit Schinken-Brokkoli` (12 rows). Every amount, unit, food and note equals what the committed repair file yields from the recorded source line |
+
+The source half of AC7 is committed at `.devsteward/evidence/REQ-007/import-source.json`. The
+observed half is the System Tester's to transcribe.
+
+**One line shape the deployment found that the workstation had not.** The first re-import
+produced a food called `Je`, from `Je 1 gelbe, grüne und rote Paprika` — a three-variant
+spelling the two-variant split did not match, on a line the parser had already transposed. It
+was fixed (`b8ba3903b`), the rule now refuses to end on a word its own lists call filler, and
+the deploy and re-import were run again from the top. That is the case for Decision 10 making
+the corpus run a develop obligation: no synthetic fixture would have written that line.
