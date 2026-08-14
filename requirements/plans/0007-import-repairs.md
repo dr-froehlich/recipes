@@ -445,3 +445,42 @@ Two lines are left malformed, both because the *source* line is: a bulleted para
 consisting of the single character `1`, and a truncated line whose bracket is never closed
 (`250 ml warmes Wasser (besser noch alkoholfreies`). Both belong to REQ-006's known class of
 paragraphs that are prose accidentally bulleted in Word, and no criterion grades them.
+
+## The re-import, second time (Decision 9)
+
+Deployed `b77aaa51a` with `deploy/deploy.sh`, whose backup gate took and verified restorable
+`deploy/dumps/tandoor-20260814T123748Z.dump` — the rollback for the first implementation's
+state. `tandoor-20260813T101030Z.dump` (REQ-006's own deploy gate, taken before its bulk
+import) was restored again, with the app container stopped so nothing held a connection. The
+import ran inside the app container as **Ingrid**, against the same 288-document zip, rebuilt
+from REQ-006 Decision 7's curation rules plus Decision 12 rather than from a remembered list —
+it comes out at 288 on the nose.
+
+| | first implementation | the rework |
+|---|---|---|
+| documents offered | 288 | 288 |
+| recipes created | 270 | **270** |
+| skipped, with a reason | 17 | 17 |
+| errors | 0 | **0** |
+| units | 33 | **33** |
+| foods | 505 | **631** |
+| food-tree parents | — | **86**, each with `substitute_children` |
+
+The flours are the rework in one line: `Weizenmehl` now has `Weizenmehl 405`, `Weizenmehl 550`
+and `Weizenmehl 1050` under it, `Roggenmehl` has three grades, `Dinkelmehl` two. Under the
+first implementation these were one food each with the grade in a note the shopping list never
+renders.
+
+**Five rows of pre-existing data were folded in, all ruled by the owner.** The restore brings
+back the three recipes the household typed by hand before REQ-006, and with them spellings the
+repair file does not produce: the units `EL` and `Prise(n)` (ruled on 2026-08-14, carried over
+from the first attempt) and the foods `Kartoffeln, festkochend`, `Zwiebeln, rot` and
+`Rinderbrühe, Pulver` (ruled during this session). Each would have failed AC8 clause (a) or (b)
+on data that predates the REQ. The first two comma foods **merged** into rows the import had
+already created, which is the rollup this REQ exists for; the third was renamed, having no
+counterpart.
+
+**Self-check before the evidence was written.** All 33 ingredient rows of the three named
+recipes were read back off the deployment and compared to what the committed repair file yields
+from the recorded source lines: **0 mismatches**. That is the develop session checking its own
+work — AC8 is still graded on what the System Tester transcribes, against the same recomputation.

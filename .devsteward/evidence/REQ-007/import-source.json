@@ -1,193 +1,202 @@
 {
- "req": "REQ-007",
- "what": "The source half of AC7, written by the develop session that restored the pre-import dump and re-imported the collection (REQ-007 Decision 9). The System Tester never sees the Word documents, so it cannot produce or bend this; it transcribes only what the deployment shows, into signoff.json in the evidence dir. The expectations are recomputed from the ingredient lines below through the committed repair file.",
- "commit": "b8ba3903bcb1ab1e9e4def4f3e86447cd6e787ab",
- "baseline": {
-  "units_before": 99,
-  "units_before_source": "counted on the deployment before the restore; REQ-007 quotes 105, measured at intake over the uncurated corpus",
-  "flour_foods_before": 18
- },
- "import_log": {
-  "keyword": "Import 5",
-  "imported_recipes": 270,
-  "import_log_counter_field": 271,
-  "documents": 288,
-  "skipped": 17,
-  "created_by": "Ingrid",
-  "space": "froehlich",
-  "recipes_before": 3,
-  "recipes_after": 273,
-  "summary_line": "Imported 270 recipes.",
-  "duplicates_ignored": [
-   "Trauben-Fenchel-Salat"
+  "req": "REQ-007",
+  "what": "The source half of AC8, written by the develop session that restored the pre-import dump and re-imported the collection through the REWORKED repair file (REQ-007 Decision 9, rework of 2026-08-14). The System Tester never sees the Word documents, so it cannot produce or bend this; it transcribes only what the deployment shows, into signoff.json in the evidence dir. The expectations are recomputed from the ingredient lines below through the committed repair file. This file REPLACES the evidence of the first implementation, whose sign-off was declined: the seam moved, so every expectation it recorded is now wrong.",
+  "commit": "b77aaa51a82c603cd9e5c391999a7581d7f3271f",
+  "seam": "The food is what you buy, written out in full; what you do with it is the note. Tandoor's shopping list renders amount, unit and food and never the note, so a buying distinction has to be in the food name. Food COUNT is deliberately not graded - the rework trades a longer food list for losing nothing.",
+  "baseline": {
+    "restored_dump": "deploy/dumps/tandoor-20260813T101030Z.dump",
+    "restored_dump_note": "REQ-006's own deploy gate, taken before its bulk import; verified restorable before the restore",
+    "rollback_dump": "deploy/dumps/tandoor-20260814T123748Z.dump",
+    "rollback_dump_note": "taken and verified by deploy.sh's backup gate before this deploy; the rollback for everything below",
+    "recipes_before": 3,
+    "foods_before": 21,
+    "units_before": [
+      "EL",
+      "Prise",
+      "Prise(n)",
+      "g",
+      "kg",
+      "ml"
+    ]
+  },
+  "import_log": {
+    "keyword": "Import 5",
+    "documents": 288,
+    "imported_recipes": 270,
+    "import_log_counter_field": 271,
+    "skipped": 17,
+    "errors": 0,
+    "created_by": "Ingrid",
+    "space": "froehlich",
+    "recipes_before": 3,
+    "recipes_after": 273,
+    "summary_line": "Imported 270 recipes.",
+    "duplicates_ignored": [
+      "Trauben-Fenchel-Salat"
+    ],
+    "counter_note": "imported_recipes reads 271 while the summary line and the keyword both say 270: the base class increments before handle_duplicates deletes the duplicate. AC8 grades the 270."
+  },
+  "curation": {
+    "documents_in_collection": 342,
+    "excluded_photo_folders": 18,
+    "excluded_templates": 25,
+    "excluded_cover": 1,
+    "excluded_chefkoch": 10,
+    "offered": 288,
+    "note": "REQ-006 Decision 7 excludes the Ausgewaehlte Bilder/ and Food-Fotografie/ folders, the 'Allg. Vorlage' templates and the root Rezeptecover.docx; REQ-007 Decision 12 excludes the ten table-shaped Chefkoch documents permanently. Reproduced from those rules, not a hand list."
+  },
+  "aggregate_after_import": {
+    "units": 33,
+    "unit_list": [
+      "Becher",
+      "Beutel",
+      "Blatt",
+      "Bund",
+      "Dose",
+      "El",
+      "Flasche",
+      "Fläschchen",
+      "Glas",
+      "Handvoll",
+      "Knolle",
+      "Messerspitze",
+      "Paar",
+      "Prise",
+      "Päckchen",
+      "Scheibe",
+      "Schnapsglas",
+      "Schuss",
+      "Spitzer",
+      "Stange",
+      "Stiel",
+      "Streifen",
+      "Stängel",
+      "Stück",
+      "Tl",
+      "Tropfen",
+      "Würfel",
+      "Zweig",
+      "cl",
+      "g",
+      "kg",
+      "l",
+      "ml"
+    ],
+    "foods": 631,
+    "food_tree_parents": 86,
+    "flours": [
+      "Dinkelmehl",
+      "Dinkelmehl 1050",
+      "Dinkelmehl 630",
+      "Mehl",
+      "Mehl italienisch",
+      "Pizzamehl",
+      "Roggenmehl",
+      "Roggenmehl 1050",
+      "Roggenmehl 1150",
+      "Roggenmehl 1370",
+      "Weizenmehl",
+      "Weizenmehl 1050",
+      "Weizenmehl 405",
+      "Weizenmehl 550",
+      "Weizenvollkornmehl"
+    ],
+    "note": "A flour is now SEVERAL foods on purpose, gathered under one parent - the opposite of what the first implementation's AC7 clause (b) demanded, which is why that clause is gone."
+  },
+  "pre_existing_data_repaired": [
+    {
+      "kind": "unit",
+      "from": "EL",
+      "into": "El",
+      "rows": 2,
+      "ruled": "2026-08-14"
+    },
+    {
+      "kind": "unit",
+      "from": "Prise(n)",
+      "into": "Prise",
+      "rows": 1,
+      "ruled": "2026-08-14"
+    },
+    {
+      "kind": "food",
+      "from": "Kartoffeln, festkochend",
+      "into": "Kartoffel festkochend",
+      "rows": 1,
+      "ruled": "2026-08-14"
+    },
+    {
+      "kind": "food",
+      "from": "Zwiebeln, rot",
+      "into": "Zwiebel rot",
+      "rows": 1,
+      "ruled": "2026-08-14"
+    },
+    {
+      "kind": "food",
+      "from": "Rinderbrühe, Pulver",
+      "into": "Rinderbrühe Pulver",
+      "rows": 0,
+      "ruled": "2026-08-14",
+      "note": "renamed rather than merged - no imported row of that name existed"
+    }
   ],
-  "skipped_documents": [
-   "SKIPPED Beilagen/Ausgedruckte Rezepte mit Bild/Spätzle schärra.docx: no ingredients and no instructions",
-   "SKIPPED Dips & Soßen/Sardellen-Mayonnaise.docx: no ingredients and no instructions",
-   "SKIPPED Fisch/Schollenfilet.docx: no ingredients and no instructions",
-   "SKIPPED Fisch/Sushi.docx: no ingredients and no instructions",
-   "SKIPPED Fleisch/Quellender Topf.docx: no ingredients and no instructions",
-   "SKIPPED Fleisch/Rinderschmorbraten.docx: no ingredients and no instructions",
-   "SKIPPED Fleisch/Rindersteak.docx: no ingredients and no instructions",
-   "SKIPPED Kuchen & Süße Gebäckstücke/Donauwelle.docx: no ingredients and no instructions",
-   "SKIPPED Kuchen & Süße Gebäckstücke/Pistazien-Macarons.docx: no ingredients and no instructions",
-   "SKIPPED Kuchen & Süße Gebäckstücke/Sally Macarons.docx: no ingredients and no instructions",
-   "SKIPPED Nachspeisen/Mousse au chocolat.docx: no ingredients and no instructions",
-   "SKIPPED Neue Rezepte/Gulasch für 10 Personen.docx: no ingredients and no instructions",
-   "SKIPPED Partysnacks/Käsestängel.docx: no ingredients and no instructions",
-   "SKIPPED Salate/Krautsalat.docx: no ingredients and no instructions",
-   "SKIPPED Salate/Wurstsalat.docx: no ingredients and no instructions",
-   "SKIPPED Salziges Backen/Olivenbrot.docx: no ingredients and no instructions",
-   "SKIPPED Salziges Backen/Zwiebelkuchen.docx: no ingredients and no instructions"
+  "pre_existing_note": "All five come from the three recipes the household entered by hand before REQ-006, which the restore brings back. They would have failed AC8 clauses (a) and (b) on data that predates this REQ. The owner ruled to fold them into the imported rows.",
+  "recipes": [
+    {
+      "name": "Bauernbrot mit Buttermilch",
+      "document": "Salziges Backen/Ausgedruckte Rezepte mit Bild/Bauernbrot mit Buttermilch.docx",
+      "ingredients": [
+        "1 kg 1050er Weizenmehl",
+        "500 g 1050er Dinkelmehl",
+        "300 g 405er Weizenmehl",
+        "1 Würfel Hefe",
+        "3 Becher Buttermilch (je 500 ml)",
+        "43 g Salz",
+        "Je 2 EL gemahlene Gewürze: Anis, Fenchel, Koriander, Kümmel",
+        "2 gekochte Kartoffeln"
+      ]
+    },
+    {
+      "name": "Scharfes Curryhähnchen aus dem Wok",
+      "document": "Fleisch/Ausgedruckte Rezepte mit Bild/Scharfes Curryhähnchen aus dem Wok.docx",
+      "ingredients": [
+        "500 g Hähnchenbrust oder Putenfleisch",
+        "Etwas Sojasoße",
+        "Etwas Öl",
+        "2 El rote Currypaste (ersatzweise Currypulver)",
+        "1 scharfe Peperoni (oder Chili)",
+        "1 Zwiebel",
+        "2 Karotten",
+        "Je 1 rote und gelbe Paprika",
+        "1 Stange Lauch",
+        "Bambussprossen oder Zuckerschoten",
+        "Pfeffer",
+        "½ l Kokosmilch"
+      ]
+    },
+    {
+      "name": "Makkaroni mit Schinken-Brokkoli",
+      "document": "Nudelgerichte/Ausgedruckte Rezepte mit Bild/Makkaroni mit Schinken-Brokkoli.docx",
+      "ingredients": [
+        "500 g Makkaroni",
+        "2 Brokkoli",
+        "1 El gehackte Chili",
+        "6 EL Olivenöl",
+        "Salz",
+        "Pfeffer",
+        "50 g gehobelte Mandeln",
+        "2 rote Zwiebeln",
+        "100 g Tiroler Schinkenspeck",
+        "Saft von einer ½ Zitrone",
+        "Frisches Basilikum",
+        "Geriebener Parmesan"
+      ]
+    }
   ],
-  "errors": []
- },
- "units_after_import": [
-  "Becher",
-  "Beutel",
-  "Blatt",
-  "Bund",
-  "Dose",
-  "EL",
-  "El",
-  "Flasche",
-  "Fläschchen",
-  "Glas",
-  "Handvoll",
-  "Knolle",
-  "Messerspitze",
-  "Paar",
-  "Prise",
-  "Prise(n)",
-  "Päckchen",
-  "Scheibe",
-  "Schnapsglas",
-  "Schuss",
-  "Spitzer",
-  "Stange",
-  "Stiel",
-  "Streifen",
-  "Stängel",
-  "Stück",
-  "Tl",
-  "Tropfen",
-  "Würfel",
-  "Zweig",
-  "cl",
-  "g",
-  "kg",
-  "l",
-  "ml"
- ],
- "units_merged": [
-  {
-   "source": "EL",
-   "target": "El",
-   "merged": true,
-   "rows_moved": 2
-  },
-  {
-   "source": "Prise(n)",
-   "target": "Prise",
-   "merged": true,
-   "rows_moved": 1
+  "verification": {
+    "rows_checked": 33,
+    "mismatches": 0,
+    "note": "Every ingredient row of the three named recipes was read back off the deployment and compared to what the committed repair file yields from the source lines recorded here. This is the develop session checking its own work; AC8 is graded on what the System Tester transcribes."
   }
- ],
- "units_final": [
-  "Becher",
-  "Beutel",
-  "Blatt",
-  "Bund",
-  "Dose",
-  "El",
-  "Flasche",
-  "Fläschchen",
-  "Glas",
-  "Handvoll",
-  "Knolle",
-  "Messerspitze",
-  "Paar",
-  "Prise",
-  "Päckchen",
-  "Scheibe",
-  "Schnapsglas",
-  "Schuss",
-  "Spitzer",
-  "Stange",
-  "Stiel",
-  "Streifen",
-  "Stängel",
-  "Stück",
-  "Tl",
-  "Tropfen",
-  "Würfel",
-  "Zweig",
-  "cl",
-  "g",
-  "kg",
-  "l",
-  "ml"
- ],
- "foods_before": 21,
- "foods_after": 505,
- "flour_foods": [
-  "Dinkelmehl",
-  "Mehl",
-  "Pizzamehl",
-  "Roggenmehl",
-  "Weizenmehl",
-  "Weizenvollkornmehl"
- ],
- "recipes": [
-  {
-   "name": "Bauernbrot mit Buttermilch",
-   "top_level_folder": "Salziges Backen",
-   "ingredients": [
-    "1 kg 1050er Weizenmehl",
-    "500 g 1050er Dinkelmehl",
-    "300 g 405er Weizenmehl",
-    "1 Würfel Hefe",
-    "3 Becher Buttermilch (je 500 ml)",
-    "43 g Salz",
-    "Je 2 EL gemahlene Gewürze: Anis, Fenchel, Koriander, Kümmel",
-    "2 gekochte Kartoffeln"
-   ]
-  },
-  {
-   "name": "Scharfes Curryhähnchen aus dem Wok",
-   "top_level_folder": "Fleisch",
-   "ingredients": [
-    "500 g Hähnchenbrust oder Putenfleisch",
-    "Etwas Sojasoße",
-    "Etwas Öl",
-    "2 El rote Currypaste (ersatzweise Currypulver)",
-    "1 scharfe Peperoni (oder Chili)",
-    "1 Zwiebel",
-    "2 Karotten",
-    "Je 1 rote und gelbe Paprika",
-    "1 Stange Lauch",
-    "Bambussprossen oder Zuckerschoten",
-    "Pfeffer",
-    "½ l Kokosmilch"
-   ]
-  },
-  {
-   "name": "Makkaroni mit Schinken-Brokkoli",
-   "top_level_folder": "Nudelgerichte",
-   "ingredients": [
-    "500 g Makkaroni",
-    "2 Brokkoli",
-    "1 El gehackte Chili",
-    "6 EL Olivenöl",
-    "Salz",
-    "Pfeffer",
-    "50 g gehobelte Mandeln",
-    "2 rote Zwiebeln",
-    "100 g Tiroler Schinkenspeck",
-    "Saft von einer ½ Zitrone",
-    "Frisches Basilikum",
-    "Geriebener Parmesan"
-   ]
-  }
- ]
 }
