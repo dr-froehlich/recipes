@@ -1,7 +1,7 @@
 version: 1
 profile: req
 cursor:
-  step: REQ-007:validate
+  step: REQ-007:develop
 steps:
   REQ-001:develop:
     status: done
@@ -34,10 +34,10 @@ steps:
     status: done
     updated: '2026-08-13T18:00:59+00:00'
   REQ-007:develop:
-    status: recover
-    updated: '2026-08-14T10:29:22+00:00'
+    status: done
+    updated: '2026-08-14T14:21:27+00:00'
   REQ-007:validate:
     status: pending
     updated: '2026-08-14T10:29:22+00:00'
 decisions: []
-seq: 22
+seq: 23
