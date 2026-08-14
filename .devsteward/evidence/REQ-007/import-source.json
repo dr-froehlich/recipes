@@ -1,0 +1,193 @@
+{
+ "req": "REQ-007",
+ "what": "The source half of AC7, written by the develop session that restored the pre-import dump and re-imported the collection (REQ-007 Decision 9). The System Tester never sees the Word documents, so it cannot produce or bend this; it transcribes only what the deployment shows, into signoff.json in the evidence dir. The expectations are recomputed from the ingredient lines below through the committed repair file.",
+ "commit": "b8ba3903bcb1ab1e9e4def4f3e86447cd6e787ab",
+ "baseline": {
+  "units_before": 99,
+  "units_before_source": "counted on the deployment before the restore; REQ-007 quotes 105, measured at intake over the uncurated corpus",
+  "flour_foods_before": 18
+ },
+ "import_log": {
+  "keyword": "Import 5",
+  "imported_recipes": 270,
+  "import_log_counter_field": 271,
+  "documents": 288,
+  "skipped": 17,
+  "created_by": "Ingrid",
+  "space": "froehlich",
+  "recipes_before": 3,
+  "recipes_after": 273,
+  "summary_line": "Imported 270 recipes.",
+  "duplicates_ignored": [
+   "Trauben-Fenchel-Salat"
+  ],
+  "skipped_documents": [
+   "SKIPPED Beilagen/Ausgedruckte Rezepte mit Bild/Spätzle schärra.docx: no ingredients and no instructions",
+   "SKIPPED Dips & Soßen/Sardellen-Mayonnaise.docx: no ingredients and no instructions",
+   "SKIPPED Fisch/Schollenfilet.docx: no ingredients and no instructions",
+   "SKIPPED Fisch/Sushi.docx: no ingredients and no instructions",
+   "SKIPPED Fleisch/Quellender Topf.docx: no ingredients and no instructions",
+   "SKIPPED Fleisch/Rinderschmorbraten.docx: no ingredients and no instructions",
+   "SKIPPED Fleisch/Rindersteak.docx: no ingredients and no instructions",
+   "SKIPPED Kuchen & Süße Gebäckstücke/Donauwelle.docx: no ingredients and no instructions",
+   "SKIPPED Kuchen & Süße Gebäckstücke/Pistazien-Macarons.docx: no ingredients and no instructions",
+   "SKIPPED Kuchen & Süße Gebäckstücke/Sally Macarons.docx: no ingredients and no instructions",
+   "SKIPPED Nachspeisen/Mousse au chocolat.docx: no ingredients and no instructions",
+   "SKIPPED Neue Rezepte/Gulasch für 10 Personen.docx: no ingredients and no instructions",
+   "SKIPPED Partysnacks/Käsestängel.docx: no ingredients and no instructions",
+   "SKIPPED Salate/Krautsalat.docx: no ingredients and no instructions",
+   "SKIPPED Salate/Wurstsalat.docx: no ingredients and no instructions",
+   "SKIPPED Salziges Backen/Olivenbrot.docx: no ingredients and no instructions",
+   "SKIPPED Salziges Backen/Zwiebelkuchen.docx: no ingredients and no instructions"
+  ],
+  "errors": []
+ },
+ "units_after_import": [
+  "Becher",
+  "Beutel",
+  "Blatt",
+  "Bund",
+  "Dose",
+  "EL",
+  "El",
+  "Flasche",
+  "Fläschchen",
+  "Glas",
+  "Handvoll",
+  "Knolle",
+  "Messerspitze",
+  "Paar",
+  "Prise",
+  "Prise(n)",
+  "Päckchen",
+  "Scheibe",
+  "Schnapsglas",
+  "Schuss",
+  "Spitzer",
+  "Stange",
+  "Stiel",
+  "Streifen",
+  "Stängel",
+  "Stück",
+  "Tl",
+  "Tropfen",
+  "Würfel",
+  "Zweig",
+  "cl",
+  "g",
+  "kg",
+  "l",
+  "ml"
+ ],
+ "units_merged": [
+  {
+   "source": "EL",
+   "target": "El",
+   "merged": true,
+   "rows_moved": 2
+  },
+  {
+   "source": "Prise(n)",
+   "target": "Prise",
+   "merged": true,
+   "rows_moved": 1
+  }
+ ],
+ "units_final": [
+  "Becher",
+  "Beutel",
+  "Blatt",
+  "Bund",
+  "Dose",
+  "El",
+  "Flasche",
+  "Fläschchen",
+  "Glas",
+  "Handvoll",
+  "Knolle",
+  "Messerspitze",
+  "Paar",
+  "Prise",
+  "Päckchen",
+  "Scheibe",
+  "Schnapsglas",
+  "Schuss",
+  "Spitzer",
+  "Stange",
+  "Stiel",
+  "Streifen",
+  "Stängel",
+  "Stück",
+  "Tl",
+  "Tropfen",
+  "Würfel",
+  "Zweig",
+  "cl",
+  "g",
+  "kg",
+  "l",
+  "ml"
+ ],
+ "foods_before": 21,
+ "foods_after": 505,
+ "flour_foods": [
+  "Dinkelmehl",
+  "Mehl",
+  "Pizzamehl",
+  "Roggenmehl",
+  "Weizenmehl",
+  "Weizenvollkornmehl"
+ ],
+ "recipes": [
+  {
+   "name": "Bauernbrot mit Buttermilch",
+   "top_level_folder": "Salziges Backen",
+   "ingredients": [
+    "1 kg 1050er Weizenmehl",
+    "500 g 1050er Dinkelmehl",
+    "300 g 405er Weizenmehl",
+    "1 Würfel Hefe",
+    "3 Becher Buttermilch (je 500 ml)",
+    "43 g Salz",
+    "Je 2 EL gemahlene Gewürze: Anis, Fenchel, Koriander, Kümmel",
+    "2 gekochte Kartoffeln"
+   ]
+  },
+  {
+   "name": "Scharfes Curryhähnchen aus dem Wok",
+   "top_level_folder": "Fleisch",
+   "ingredients": [
+    "500 g Hähnchenbrust oder Putenfleisch",
+    "Etwas Sojasoße",
+    "Etwas Öl",
+    "2 El rote Currypaste (ersatzweise Currypulver)",
+    "1 scharfe Peperoni (oder Chili)",
+    "1 Zwiebel",
+    "2 Karotten",
+    "Je 1 rote und gelbe Paprika",
+    "1 Stange Lauch",
+    "Bambussprossen oder Zuckerschoten",
+    "Pfeffer",
+    "½ l Kokosmilch"
+   ]
+  },
+  {
+   "name": "Makkaroni mit Schinken-Brokkoli",
+   "top_level_folder": "Nudelgerichte",
+   "ingredients": [
+    "500 g Makkaroni",
+    "2 Brokkoli",
+    "1 El gehackte Chili",
+    "6 EL Olivenöl",
+    "Salz",
+    "Pfeffer",
+    "50 g gehobelte Mandeln",
+    "2 rote Zwiebeln",
+    "100 g Tiroler Schinkenspeck",
+    "Saft von einer ½ Zitrone",
+    "Frisches Basilikum",
+    "Geriebener Parmesan"
+   ]
+  }
+ ]
+}
