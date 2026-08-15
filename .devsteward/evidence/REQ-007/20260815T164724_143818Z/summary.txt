@@ -1,0 +1,52 @@
+REQ-007 AC8 — guided System Tester session summary
+2026-08-15, operator Peter Froehlich, observation surface https://rezepte.p5i.de
+
+Lab: no redeploy performed. Verified read-only over SSH that the host is already running
+commit b77aaa51a82c603cd9e5c391999a7581d7f3271f (TANDOOR_VERSION / TANDOOR_REF in
+cookbook/version_info.py), and confirmed via `git diff --stat` that no code changed between
+that commit and HEAD (83e12eb84) — only .devsteward ledger/evidence files and the plan doc.
+The reworked repair file's re-import (Decision 9) already ran on this deployment per
+.devsteward/evidence/REQ-007/import-source.json. Re-running deploy/deploy.sh was judged
+unnecessary and was not run.
+
+Procedure: walked the operator through each part of AC8's observation surface, comparing what
+was transcribed off the live UI against expectations independently recomputed from the
+REQ-007 repair rules (Decisions 1-17, the Requirement section, AC1-AC7 examples) applied to
+the source ingredient lines recorded in import-source.json. The System Tester did not see the
+develop session's diff, plan, or self-verification numbers.
+
+Findings, by clause:
+
+(a) unit list — /list/Unit shows exactly the 33 units the repair file names as known units,
+    nothing else. MATCH. See unit-list-transcript.txt.
+
+(b) no food name with a comma or a unit word — checked across the "Mehl" filter (16 foods),
+    the "Paprika" filter (13 foods), and all food names appearing in the three named recipes.
+    No comma, no unit word anywhere. MATCH.
+
+(c) the three named recipes, ingredient row by row — see recipe-1/2/3 transcripts.
+    - Recipe 1 (Bauernbrot mit Buttermilch): 8/8 rows match, including a colon-list line
+      ("Je 2 EL gemahlene Gewürze: Anis, Fenchel, Koriander, Kümmel") not covered by any
+      explicit rule in the frozen text — all four spice names survive verbatim in the note.
+    - Recipe 2 (Scharfes Curryhähnchen aus dem Wok): 13/13 rows match (12 source lines, one
+      Je-X-und-Y line correctly split into two per AC4).
+    - Recipe 3 (Makkaroni mit Schinken-Brokkoli): 11/12 rows match. ONE ANOMALY: "Saft von
+      einer ½ Zitrone" recovers food "Zitrone" and note "Saft von" correctly, but the amount
+      is empty rather than the expected 0.5 — the operator confirmed on direct questioning
+      that both the amount and unit fields are genuinely empty for this row, not just
+      untranscribed. This is a live, real-collection failure of the amount-recovery half of
+      the extraction-phrase repair for this specific phrasing (a digit fraction after
+      "einer" inside a "Saft von" phrase), separate from the food/note half, which works.
+
+(d) recipe count under keyword "Import 5" — operator read 270 from the filtered recipe list,
+    matching the import log's recorded imported_recipes count of 270 exactly. MATCH.
+
+(e) food tree — "Weizenmehl" confirmed parent of Weizenmehl 550/1050/405; "Paprika" confirmed
+    parent of Paprika edelsüß/rot/gelb/bunt/grün, including both "Paprika rot" and
+    "Paprika gelb" named explicitly in AC8's text. MATCH.
+
+Net: four of five clauses transcribed as a clean match against independently recomputed
+expectations; clause (c) surfaced one concrete anomaly (the Zitrone amount) on real collection
+data, isolated to a single line shape. This report carries no gate weight and asserts no
+pass/fail verdict — the operator's sign-off decision (approve / decline / defer-as-pending) is
+recorded by the engine, not by this session.

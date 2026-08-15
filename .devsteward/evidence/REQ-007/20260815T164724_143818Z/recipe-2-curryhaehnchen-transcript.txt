@@ -1,0 +1,59 @@
+AC8 clause (c) — recipe transcript: "Scharfes Curryhähnchen aus dem Wok"
+Captured: 2026-08-15, guided System Tester session, operator Peter Froehlich
+Observation surface: https://rezepte.p5i.de, recipe "Scharfes Curryhähnchen aus dem Wok",
+signed in as normal user
+
+Source lines and recomputed expectations vs. observed:
+
+1. "500 g Hähnchenbrust oder Putenfleisch"
+   expected: 500 g, food "Hähnchenbrust", note "oder Putenfleisch" (cut conjunction "oder")
+   observed: 500 g, food "Hähnchenbrust", note "oder Putenfleisch"  -> MATCH
+
+2. "Etwas Sojasoße"
+   expected: no amount/unit, food "Sojasoße", no note (drop word "Etwas")
+   observed: no amount/unit, food "Sojasoße"  -> MATCH
+
+3. "Etwas Öl"
+   expected: no amount/unit, food "Öl", no note
+   observed: no amount/unit, food "Öl"  -> MATCH
+
+4. "2 El rote Currypaste (ersatzweise Currypulver)"
+   expected: 2 El, food "Currypaste rot" (unlisted qualifier kept, de-inflected), note
+   "ersatzweise Currypulver" (bracket verbatim)
+   observed: 2 El, food "Currypaste rot", note "ersatzweise Currypulver"  -> MATCH
+
+5. "1 scharfe Peperoni (oder Chili)"
+   expected: 1, no unit, food "Peperoni scharf", note "oder Chili" (bracket verbatim)
+   observed: 1, no unit, food "Peperoni scharf", note "oder Chili"  -> MATCH
+
+6. "1 Zwiebel"
+   expected: 1, no unit, food "Zwiebel", no note
+   observed: 1, no unit, food "Zwiebel"  -> MATCH
+
+7. "2 Karotten"
+   expected: 2, no unit, food "Karotte" (singular resolution uncertain in advance, flagged)
+   observed: 2, no unit, food "Karotte"  -> MATCH, resolves the flagged uncertainty
+
+8. "Je 1 rote und gelbe Paprika"  [AC4 split case]
+   expected: two rows, "1 Paprika rot" and "1 Paprika gelb", neither carrying a note
+   observed: "1 — Paprika rot" and "1 — Paprika gelb", no unit, no note on either  -> MATCH
+
+9. "1 Stange Lauch"
+   expected: 1 Stange, food "Lauch", no note
+   observed: 1 Stange, food "Lauch"  -> MATCH
+
+10. "Bambussprossen oder Zuckerschoten"
+    expected: no amount/unit, food "Bambussprossen", note "oder Zuckerschoten"
+    observed: no amount/unit, food "Bambussprossen", note "oder Zuckerschoten"  -> MATCH
+
+11. "Pfeffer"
+    expected: no amount/unit, food "Pfeffer", no note
+    observed: no amount/unit, food "Pfeffer"  -> MATCH
+
+12. "½ l Kokosmilch"
+    expected: 0.5 l, food "Kokosmilch", no note
+    observed: 0.5 l, food "Kokosmilch"  -> MATCH
+
+Result: 13 ingredient rows (12 source lines, one split into two per AC4), all match the
+recomputed expectation exactly. No qualifier lost. The AC4 line-level split (Je X und Y) is
+confirmed working end to end on live data.

@@ -1,0 +1,36 @@
+AC8 clauses (b) and (e), flour half — food list transcription
+Captured: 2026-08-15, guided System Tester session, operator Peter Froehlich
+Observation surface: https://rezepte.p5i.de/list/Food, filtered "Mehl", signed in as normal user
+
+Foods shown on screen (as read aloud by the operator):
+Mehl
+Mehl italienisch
+Dinkelmehl
+Dinkelmehl 1050
+Dinkelmehl 630
+Kartoffel mehlig kochend
+Pizzamehl
+Roggenmehl
+Roggenmehl 1050
+Roggenmehl 1150
+Roggenmehl 1370
+Weizenmehl
+Weizenmehl 1050
+Weizenmehl 405
+Weizenmehl 550
+Weizenvollkornmehl
+
+Expected (aggregate_after_import.flours in import-source.json, 15 entries):
+Dinkelmehl, Dinkelmehl 1050, Dinkelmehl 630, Mehl, Mehl italienisch, Pizzamehl, Roggenmehl,
+Roggenmehl 1050, Roggenmehl 1150, Roggenmehl 1370, Weizenmehl, Weizenmehl 1050,
+Weizenmehl 405, Weizenmehl 550, Weizenvollkornmehl
+
+Result: all 15 expected flour foods present. One incidental substring match not in the
+expected set, "Kartoffel mehlig kochend" (matched via "mehlig"), which is a genuinely
+different food (a potato variety) and carries no comma and no unit word - not a defect.
+
+Clause (b) (no comma, no unit word in any food name): no food name in this list contains a
+comma or a unit token. PASS on this filter.
+
+Clause (e), flour half: operator confirmed via the food tree that Weizenmehl is the parent
+of all three of Weizenmehl 550, Weizenmehl 1050 and Weizenmehl 405. PASS for the flour half.

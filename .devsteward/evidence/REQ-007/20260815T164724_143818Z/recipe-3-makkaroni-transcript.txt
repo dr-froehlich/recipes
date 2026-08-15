@@ -1,0 +1,81 @@
+AC8 clause (c) — recipe transcript: "Makkaroni mit Schinken-Brokkoli"
+Captured: 2026-08-15, guided System Tester session, operator Peter Froehlich
+Observation surface: https://rezepte.p5i.de, recipe "Makkaroni mit Schinken-Brokkoli",
+signed in as normal user
+
+Source lines and recomputed expectations vs. observed:
+
+1. "500 g Makkaroni"
+   expected: 500 g, food "Makkaroni", no note
+   observed: 500 g, food "Makkaroni"  -> MATCH
+
+2. "2 Brokkoli"
+   expected: 2, no unit, food "Brokkoli", no note
+   observed: 2, no unit, food "Brokkoli"  -> MATCH
+
+3. "1 El gehackte Chili"
+   expected: 1 El, food "Chili", note "gehackt" (past participle, not a product form -> note)
+   observed: 1 El, food "Chili", note "gehackt"  -> MATCH
+
+4. "6 EL Olivenöl"
+   expected: 6 El, food "Olivenöl", no note
+   observed: 6 El, food "Olivenöl"  -> MATCH
+
+5. "Salz"
+   expected: no amount/unit, food "Salz", no note
+   observed: no amount/unit, food "Salz"  -> MATCH
+
+6. "Pfeffer"
+   expected: no amount/unit, food "Pfeffer", no note
+   observed: no amount/unit, food "Pfeffer"  -> MATCH
+
+7. "50 g gehobelte Mandeln"
+   expected: uncertain in advance (flagged) between "Mandel gehobelt" and "Mandel" noted
+   "gehobelt"
+   observed: 50 g, food "Mandeln" (plural, NOT de-inflected to "Mandel"), note "gehobelt"
+   -> resolves the flag: "gehobelt" is treated as a note (a home preparation, not a listed
+      product form), consistent with the Chili/gehackt and Zwiebel/gehackt pattern. The head
+      noun stayed "Mandeln" rather than "Mandel" — the food-alias list is a closed list of
+      specific pairs (Decision 2), not a general singularizer, so this is consistent with
+      "Zwiebeln"->"Zwiebel rot" and "Karotten"->"Karotte" only happening because those specific
+      pairs are in the alias list and "Mandeln"/"Mandel" is not. No qualifier lost either way.
+      Not treated as a defect.
+
+8. "2 rote Zwiebeln"
+   expected: 2, no unit, food "Zwiebel rot", no note
+   observed: 2, no unit, food "Zwiebel rot"  -> MATCH
+
+9. "100 g Tiroler Schinkenspeck"
+   expected: uncertain in advance (flagged) between "Schinkenspeck Tiroler" (reordered) and
+   kept whole as written
+   observed: 100 g, food "Tiroler Schinkenspeck", no note
+   -> resolves the flag: kept exactly as written (keep-whole / invariant-adjective behaviour).
+      No qualifier lost, no comma, no unit word. Not treated as a defect.
+
+10. "Saft von einer ½ Zitrone"
+    expected: amount 0.5, no unit, food "Zitrone", note "Saft von" (extraction phrase,
+    calibrated against AC2's "Zitrone, Saft von 1/2" -> amount 0.5 and "Saft einer halben
+    Zitrone" -> amount 0.5; "einer ½ Zitrone" is the same quantity phrased with the digit
+    instead of the word "halben")
+    observed: NO amount and NO unit at all (both fields empty), food "Zitrone", note "Saft von"
+    -> DISCREPANCY. The food and note are correct, but the amount that AC8 clause (c) requires
+       ("the amount and unit match what the recorded source line yields through the repair
+       file") is missing rather than 0.5. Operator confirmed explicitly, on being asked to read
+       the literal amount field, that both amount and unit are empty for this row.
+
+11. "Frisches Basilikum"
+    expected: no amount/unit, food "Basilikum", note "frisch" (condition word, Decision 14)
+    observed: no amount/unit, food "Basilikum", note "frisch"  -> MATCH
+
+12. "Geriebener Parmesan"
+    expected: no amount/unit, food "Parmesan gerieben" ("gerieben" is a listed product form),
+    no note
+    observed: no amount/unit, food "Parmesan gerieben"  -> MATCH
+
+Result: 11 of 12 rows match the recomputed expectation, including both flagged-uncertain rows
+resolving to explainable, non-defective behaviour. Row 10 ("Saft von einer ½ Zitrone") is a
+genuine anomaly: the extraction-phrase repair correctly recovers the food and note but drops
+the amount (0.5 expected, empty observed) for this specific phrasing (quantity given as a
+digit fraction after "einer", inside an extraction phrase, rather than a whole number
+immediately after "von" or the word "halben"). This is the one finding of this session flagged
+for the operator's sign-off judgment.

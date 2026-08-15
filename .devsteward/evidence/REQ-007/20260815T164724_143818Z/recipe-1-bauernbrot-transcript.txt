@@ -1,0 +1,51 @@
+AC8 clause (c) — recipe transcript: "Bauernbrot mit Buttermilch"
+Captured: 2026-08-15, guided System Tester session, operator Peter Froehlich
+Observation surface: https://rezepte.p5i.de, recipe "Bauernbrot mit Buttermilch", signed in
+as normal user
+
+Source lines (from .devsteward/evidence/REQ-007/import-source.json, recorded by the develop
+session) and expectations independently recomputed by the System Tester from the REQ-007
+repair rules, vs. what was transcribed off the live ingredient rows:
+
+1. "1 kg 1050er Weizenmehl"
+   expected: 1 kg, food "Weizenmehl 1050", no note
+   observed: 1 kg, food "Weizenmehl 1050"  -> MATCH
+
+2. "500 g 1050er Dinkelmehl"
+   expected: 500 g, food "Dinkelmehl 1050", no note
+   observed: 500 g, food "Dinkelmehl 1050"  -> MATCH
+
+3. "300 g 405er Weizenmehl"
+   expected: 300 g, food "Weizenmehl 405", no note
+   observed: 300 g, food "Weizenmehl 405"  -> MATCH
+
+4. "1 Würfel Hefe"
+   expected: 1 Würfel, food "Hefe", no note
+   observed: 1 Würfel, food "Hefe"  -> MATCH
+
+5. "3 Becher Buttermilch (je 500 ml)"
+   expected: 3 Becher, food "Buttermilch", note "je 500 ml" (bracket read verbatim, Decision 17)
+   observed: 3 Becher, food "Buttermilch", note "je 500 ml"  -> MATCH
+
+6. "43 g Salz"
+   expected: 43 g, food "Salz", no note
+   observed: 43 g, food "Salz"  -> MATCH
+
+7. "Je 2 EL gemahlene Gewürze: Anis, Fenchel, Koriander, Kümmel"
+   expected: uncertain by the frozen text alone (no rule covers a colon-separated list); the
+   System Tester flagged this line rather than asserting a canonical string, and checked only
+   the invariant that no named spice is lost and "gemahlen" (a listed product form) stays
+   attached to the food.
+   observed: 2 El, food "Gewürze gemahlen", note "Anis, Fenchel, Koriander, Kümmel"
+   -> all four spice names present verbatim in the note; "gemahlen" correctly kept in the food
+      name as a product form. No qualifier lost.
+
+8. "2 gekochte Kartoffeln"
+   expected: 2, no unit, food "Kartoffel", note "gekocht" (participle not in the given
+   PRODUCT_FORMS examples, defaults to note per Decision 14)
+   observed: 2, no unit, food "Kartoffel", note "gekocht"  -> MATCH
+
+Result: 8/8 rows checked, no qualifier lost, no line's food/unit/amount deviates from the
+recomputed expectation. Line 7's exact repair behaviour for a colon-list was not specified by
+the frozen text in advance, but the observed result satisfies the governing invariant ("no
+repair may lose a qualifier... it is in the food name or it is in the note").

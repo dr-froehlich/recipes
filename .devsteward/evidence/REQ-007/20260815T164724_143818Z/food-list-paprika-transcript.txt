@@ -1,0 +1,33 @@
+AC8 clauses (b) and (e), pepper half — food list transcription
+Captured: 2026-08-15, guided System Tester session, operator Peter Froehlich
+Observation surface: https://rezepte.p5i.de/list/Food, filtered "Paprika", signed in as normal user
+
+Foods shown on screen:
+Paprika
+Paprika bunt
+Paprika edelsüß
+Paprika gelb
+Paprika grün
+Paprika rot
+Paprikapulver
+Paprikapulver edelsüß
+Paprikapulver geräuchert
+Paprikaschote
+Paprikaschote rot
+Edelsüßes Paprikapulver
+Räucherpaprikapulver
+
+Clause (b): no comma and no unit word in any of these names. PASS.
+
+Clause (e), pepper half: operator confirmed via the food tree that Paprika is the parent
+of Paprika edelsüß, Paprika rot, Paprika gelb, Paprika bunt and Paprika grün - includes both
+"Paprika rot" and "Paprika gelb" named explicitly in AC8's text. PASS for the pepper half.
+
+Note: Paprikapulver / Paprikapulver edelsüß / Paprikapulver geräuchert / Paprikaschote /
+Paprikaschote rot / Edelsüßes Paprikapulver / Räucherpaprikapulver are distinct products
+(powder, pod), correctly not children of the Paprika (fresh pepper) parent - consistent
+with REQ-007 Decision 7 keep-whole / different-head-noun handling, not a defect.
+
+AC8 clause (e) overall (flours under Weizenmehl, peppers under Paprika, both bare parents
+existing though no line names them bare - not directly verified that no line names Weizenmehl
+or Paprika bare, but both bare parent foods exist and hold the correct children): PASS.

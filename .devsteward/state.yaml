@@ -37,10 +37,7 @@ steps:
     status: done
     updated: '2026-08-14T14:21:27+00:00'
   REQ-007:validate:
-    status: blocked-on-decision
-    updated: '2026-08-14T20:00:34+00:00'
-    hold: 'REQ-007 validation pending — async QA: manual AC AC8 awaits the human sign-off.
-      Run `steward validate REQ-007` from a plain shell when ready; meanwhile other
-      REQs proceed (the waiting human does not freeze the pipeline).'
+    status: done
+    updated: '2026-08-15T18:06:48+00:00'
 decisions: []
-seq: 25
+seq: 27

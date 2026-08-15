@@ -1,0 +1,49 @@
+AC8 clause (a) — unit list transcription
+Captured: 2026-08-15, guided System Tester session, operator Peter Froehlich
+Observation surface: https://rezepte.p5i.de/list/Unit, signed in as normal user
+
+Units shown on screen (as read aloud by the operator):
+Becher
+Beutel
+Blatt
+Bund
+cl
+Dose
+El
+Flasche
+Fläschchen
+g
+Glas
+Handvoll
+kg
+Knolle
+l
+Messerspitze
+ml
+Paar
+Prise
+Päckchen
+Scheibe
+Schnapsglas
+Schuss
+Spitzer
+Stange
+Stiel
+Streifen
+Stängel
+Stück
+Tl
+Tropfen
+Würfel
+Zweig
+
+Count: 33
+
+Expected (repair file's known-units list, per .devsteward/evidence/REQ-007/import-source.json
+aggregate_after_import.unit_list, also 33 entries):
+Becher, Beutel, Blatt, Bund, Dose, El, Flasche, Fläschchen, Glas, Handvoll, Knolle,
+Messerspitze, Paar, Prise, Päckchen, Scheibe, Schnapsglas, Schuss, Spitzer, Stange, Stiel,
+Streifen, Stängel, Stück, Tl, Tropfen, Würfel, Zweig, cl, g, kg, l, ml
+
+Result: exact set match (order differs only by UI sort). No adjective or non-repair-file
+name present. AC8 clause (a): PASS.
