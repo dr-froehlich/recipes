@@ -1,0 +1,25 @@
+{
+  "derived": {
+    "recipe": "Pizza",
+    "editor_shows_working_and_waiting_boxes": true,
+    "legacy_step_opened_as": {"working": 0, "waiting": 720},
+    "steps": [
+      {"working": 10, "waiting": 720},
+      {"working": 5, "waiting": 0}
+    ],
+    "steps_after_reopen": [
+      {"working": 10, "waiting": 720},
+      {"working": 5, "waiting": 0}
+    ],
+    "recipe_time_fields_disabled": true,
+    "detail_working_time": "15 min",
+    "detail_waiting_time": "40 h 35 min",
+    "list_card_chip": "40 h 50 min"
+  },
+  "manual": {
+    "recipe": "Pfannkuchen",
+    "recipe_time_fields_disabled": false,
+    "entered": {"working_time": 10, "waiting_time": 30},
+    "persisted_after_reload": {"working_time": 10, "waiting_time": 30}
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "note": "Supplementary evidence: read-only GET https://rezepte.p5i.de/api/recipe/1/ (Pizza), fetched by the operator while signed in, after both step edits were saved. Not required by test_step_time_signoff.py but kept for reviewability alongside signoff.json.",
+  "recipe": "Pizza",
+  "recipe_working_time": 10,
+  "recipe_waiting_time": 2440,
+  "note_on_totals": "Snapshot taken after the FIRST step edit only (step id 1: working_time=10, time=730), before the second step edit (id 2: working_time=5) was saved. See signoff.json for the final totals (working 15 / waiting 2435) confirmed afterward via the detail page and list card.",
+  "steps": [
+    {"id": 1, "name": "Tag 1: Vorteig", "time": 730, "working_time": 10, "order": 0},
+    {"id": 5, "name": "Teig über Nacht gehen lassen", "time": 0, "working_time": 0, "order": 1},
+    {"id": 2, "name": "Tag 2: Hauptteig", "time": 5, "working_time": 0, "order": 2, "note": "edited to working_time=5 AFTER this snapshot was taken"},
+    {"id": 3, "name": "Mischen", "time": 5, "working_time": 0, "order": 3},
+    {"id": 4, "name": "Kneten", "time": 10, "working_time": 0, "order": 4},
+    {"id": 6, "name": "Stockgare im Kühlschrank", "time": 1440, "working_time": 0, "order": 5},
+    {"id": 7, "name": "Tag 3: Pizzaballen formen", "time": 10, "working_time": 0, "order": 6},
+    {"id": 8, "name": "Stückgare", "time": 240, "working_time": 0, "order": 7},
+    {"id": 9, "name": "Belegen", "time": 5, "working_time": 0, "order": 8},
+    {"id": 10, "name": "Backen", "time": 5, "working_time": 0, "order": 9}
+  ]
+}
