@@ -1,7 +1,7 @@
 version: 1
 profile: req
 cursor:
-  step: REQ-009:develop
+  step: REQ-009:validate
 steps:
   REQ-001:develop:
     status: done
@@ -45,5 +45,8 @@ steps:
   REQ-009:develop:
     status: done
     updated: '2026-08-16T16:42:03+00:00'
+  REQ-009:validate:
+    status: done
+    updated: '2026-08-16T17:03:43+00:00'
 decisions: []
-seq: 29
+seq: 31
