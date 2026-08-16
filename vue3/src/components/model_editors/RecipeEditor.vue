@@ -51,10 +51,12 @@
                         <model-select mode="tags" v-model="editingObj.keywords" model="Keyword" allow-create></model-select>
                         <v-row dense>
                             <v-col cols="12" md="6">
-                                <v-number-input :label="$t('WaitingTime')" v-model="editingObj.waitingTime" :step="5"></v-number-input>
+                                <v-number-input :label="$t('WaitingTime')" v-model="editingObj.waitingTime" :step="5" :disabled="timesDerivedFromSteps"
+                                                :hint="timesDerivedFromSteps ? $t('TimesDerivedFromSteps') : undefined" :persistent-hint="timesDerivedFromSteps"></v-number-input>
                             </v-col>
                             <v-col cols="12" md="6">
-                                <v-number-input :label="$t('WorkingTime')" v-model="editingObj.workingTime" :step="5"></v-number-input>
+                                <v-number-input :label="$t('WorkingTime')" v-model="editingObj.workingTime" :step="5" :disabled="timesDerivedFromSteps"
+                                                :hint="timesDerivedFromSteps ? $t('TimesDerivedFromSteps') : undefined" :persistent-hint="timesDerivedFromSteps"></v-number-input>
                             </v-col>
                             <v-col cols="12" md="6">
                                 <v-number-input :label="$t('Servings')" v-model="editingObj.servings">
@@ -189,7 +191,7 @@
 
 <script setup lang="ts">
 
-import {onMounted, PropType, ref, shallowRef, watch} from "vue";
+import {computed, onMounted, PropType, ref, shallowRef, watch} from "vue";
 import {ApiApi, Ingredient, Recipe, Step} from "@/openapi";
 import ModelEditorBase from "@/components/model_editors/ModelEditorBase.vue";
 import {useModelEditorFunctions} from "@/composables/useModelEditorFunctions";
@@ -221,6 +223,17 @@ const props = defineProps({
 const emit = defineEmits(['create', 'save', 'delete', 'close', 'changedState'])
 const modelEditorFunctions = useModelEditorFunctions<Recipe>('Recipe', emit)
 const {setupState, deleteObject, saveObject, isUpdate, editingObjName, loading, editingObj, editingObjChanged, modelClass} = modelEditorFunctions
+
+/**
+ * whether this recipe's totals come from its steps rather than from a person (REQ-008)
+ *
+ * the switch is whether the steps carry any elapsed time at all. the backend enforces the same rule -
+ * this only keeps the editor from offering a value the API would refuse. zeroing every step time hands
+ * the fields back.
+ */
+const timesDerivedFromSteps = computed(() => {
+    return (editingObj.value?.steps ?? []).reduce((total: number, step: Step) => total + (step.time ?? 0), 0) > 0
+})
 
 const model = defineModel<typeof modelEditorFunctions>()
 model.value = modelEditorFunctions

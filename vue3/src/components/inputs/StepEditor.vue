@@ -43,8 +43,11 @@
             ></v-text-field>
 
             <v-row>
-                <v-col cols="12" md="6" v-if="showTime || step.time != 0">
-                    <v-number-input :label="$t('Time')" v-model="step.time" :min="0" :step="5" control-variant="split"></v-number-input>
+                <v-col cols="12" md="3" v-if="showTime || step.time != 0">
+                    <v-number-input :label="$t('WorkingTime')" v-model="stepWorkingTime" :min="0" :step="5" control-variant="split"></v-number-input>
+                </v-col>
+                <v-col cols="12" md="3" v-if="showTime || step.time != 0">
+                    <v-number-input :label="$t('WaitingTime')" v-model="stepWaitingTime" :min="0" :step="5" control-variant="split"></v-number-input>
                 </v-col>
                 <v-col cols="12" md="6" v-if="showRecipe || step.stepRecipe != null">
                     <model-select model="Recipe" v-model="step.stepRecipeData"
@@ -233,7 +236,7 @@
 </template>
 
 <script setup lang="ts">
-import {nextTick, ref} from 'vue'
+import {computed, nextTick, ref} from 'vue'
 import {ApiApi, Ingredient, ParsedIngredient, Recipe, Step} from "@/openapi";
 import StepMarkdownEditor from "@/components/inputs/StepMarkdownEditor.vue";
 import ModelSelect from "@/components/inputs/ModelSelect.vue";
@@ -244,6 +247,7 @@ import IngredientString from "@/components/display/IngredientString.vue";
 import {useUserPreferenceStore} from "@/stores/UserPreferenceStore";
 import {ErrorMessageType, useMessageStore} from "@/stores/MessageStore";
 import StepIngredientSorterDialog from "@/components/dialogs/StepIngredientSorterDialog.vue";
+import {fromStoredStepTime, toStoredStepTime} from "@/utils/step_time_utils";
 
 const emit = defineEmits(['delete', 'move'])
 
@@ -268,6 +272,30 @@ const dialogIngredientSorter = ref(false)
 
 const editingIngredientIndex = ref(0)
 const ingredientTextInput = ref("")
+
+/**
+ * the two durations a cook states, written back to the pair a step stores (REQ-008)
+ *
+ * the model keeps `time` as total elapsed and `working_time` as the attended part inside it; the author
+ * states working and waiting directly. all the arithmetic lives in step_time_utils, so this component
+ * only wires the two ends together - and because the total is always rebuilt from the two inputs, a
+ * working time can never come to exceed it.
+ */
+const stepWorkingTime = computed({
+    get: () => fromStoredStepTime(step.value.time, step.value.workingTime).working,
+    set: (working: number) => applyStepDurations(working, stepWaitingTime.value),
+})
+
+const stepWaitingTime = computed({
+    get: () => fromStoredStepTime(step.value.time, step.value.workingTime).waiting,
+    set: (waiting: number) => applyStepDurations(stepWorkingTime.value, waiting),
+})
+
+function applyStepDurations(working: number, waiting: number) {
+    const stored = toStoredStepTime(working, waiting)
+    step.value.time = stored.time
+    step.value.workingTime = stored.workingTime
+}
 
 /**
  * sort function called by draggable when ingredient table is sorted

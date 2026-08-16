@@ -4,12 +4,13 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.postgres.search import SearchVector
 from django.core.cache import caches
-from django.db.models.signals import post_delete, post_save, pre_save
+from django.db.models.signals import m2m_changed, post_delete, post_save, pre_delete, pre_save
 from django.dispatch import receiver
 from django.utils import translation
 from django_scopes import scopes_disabled
 
 from cookbook.helper.cache_helper import CacheHelper
+from cookbook.helper.recipe_time_helper import recalculate_recipe_times, recalculate_recipe_times_by_id
 from cookbook.helper.unit_conversion_helper import UnitConversionHelper
 from cookbook.managers import DICTIONARY
 from cookbook.models import Food, PropertyType, Recipe, SearchFields, SearchPreference, Step, Unit, UserPreference, UserSpace
@@ -76,6 +77,56 @@ def update_step_search_vector(sender, instance=None, created=False, **kwargs):
         instance.save()
     finally:
         del instance.skip_signal
+
+
+@receiver(post_save, sender=Step)
+@skip_signal
+def update_recipe_times_on_step_save(sender, instance=None, created=False, **kwargs):
+    """Materialize the totals of every recipe this step belongs to (REQ-008).
+
+    A step may belong to more than one recipe - ``Recipe.steps`` is a ManyToMany - so every
+    member of ``recipe_set`` is recomputed, not just one. ``scopes_disabled`` because signals
+    fire from management commands, migrations and background threads as well as from requests,
+    where no active scope exists for the ``ScopedManager`` to read.
+    """
+    with scopes_disabled():
+        for recipe in instance.recipe_set.all():
+            recalculate_recipe_times(recipe)
+
+
+@receiver(pre_delete, sender=Step)
+def stash_recipes_of_deleted_step(sender, instance=None, **kwargs):
+    """Remember which recipes owned this step, before the through-rows cascade away.
+
+    ``post_delete`` is too late to ask: Django's collector deletes the ``Recipe.steps``
+    through-rows before the step itself, and cascaded through-row deletes send no
+    ``m2m_changed``. Same stash-then-act shape as the ``UserSpace`` receivers below.
+    """
+    with scopes_disabled():
+        instance._time_recipe_ids = list(instance.recipe_set.values_list('pk', flat=True))
+
+
+@receiver(post_delete, sender=Step)
+def update_recipe_times_on_step_delete(sender, instance=None, **kwargs):
+    """Materialize the totals of the recipes the deleted step belonged to (REQ-008)."""
+    with scopes_disabled():
+        recalculate_recipe_times_by_id(getattr(instance, '_time_recipe_ids', []))
+
+
+@receiver(m2m_changed, sender=Recipe.steps.through)
+def update_recipe_times_on_steps_changed(sender, instance=None, action=None, **kwargs):
+    """Materialize totals when a recipe's step list itself changes (REQ-008).
+
+    Covers the paths that move an existing step onto or off a recipe without saving the step,
+    which the ``Step`` receivers above never see.
+    """
+    if action not in ('post_add', 'post_remove', 'post_clear'):
+        return
+    with scopes_disabled():
+        if isinstance(instance, Recipe):
+            recalculate_recipe_times(instance)
+        else:
+            recalculate_recipe_times_by_id(kwargs.get('pk_set') or [])
 
 
 @receiver(post_save, sender=Food)

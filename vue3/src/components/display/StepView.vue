@@ -10,7 +10,15 @@
                     <span class="text-body-2 text-grey mr-2" v-if="props.startTime"><i class="fas fa-bread-slice fa-fw mr-1"></i>{{ props.startTime }}</span>
                     <v-btn-group density="compact" variant="tonal" class="d-print-none">
                         <v-btn size="small" color="info" v-if="step.time != undefined && step.time > 0" @click="timerRunning = true"><i
-                            class="fas fa-stopwatch mr-1 fa-fw"></i> {{ displayDuration(step.time) }}
+                            class="fas fa-stopwatch mr-1 fa-fw"></i>
+                            <span v-if="stepDurations.working > 0 && stepDurations.waiting > 0">
+                                <i class="fas fa-cogs fa-fw"></i> {{ displayDuration(stepDurations.working) }}
+                                <i class="fas fa-hourglass-half fa-fw ml-1"></i> {{ displayDuration(stepDurations.waiting) }}
+                            </span>
+                            <span v-else-if="stepDurations.working > 0">
+                                <i class="fas fa-cogs fa-fw"></i> {{ displayDuration(stepDurations.working) }}
+                            </span>
+                            <span v-else>{{ displayDuration(step.time) }}</span>
                         </v-btn>
                         <v-btn size="small" color="success" v-if="hasDetails" @click="stepChecked = !stepChecked"><i class="fas fa-fw"
                                                                                                                      :class="{'fa-check': !stepChecked, 'fa-times': stepChecked}"></i>
@@ -65,10 +73,15 @@ import Instructions from "@/components/display/Instructions.vue";
 import Timer from "@/components/display/Timer.vue";
 import {useUserPreferenceStore} from "@/stores/UserPreferenceStore.ts";
 import {useDurationDisplay} from "@/composables/useDurationDisplay.ts";
+import {fromStoredStepTime} from "@/utils/step_time_utils.ts";
 
 const displayDuration = useDurationDisplay()
 
 const step = defineModel<Step>({required: true})
+
+// the attended and unattended halves of this step's elapsed time (REQ-008). the timer below still runs
+// on step.time, which remains the total the step occupies - that is what a step timer should count down
+const stepDurations = computed(() => fromStoredStepTime(step.value.time, step.value.workingTime))
 
 const props = defineProps({
     stepNumber: {

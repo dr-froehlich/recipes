@@ -30,6 +30,7 @@ from cookbook.helper.ai_helper import get_monthly_token_usage
 from cookbook.helper.image_processing import is_file_type_allowed
 from cookbook.helper.permission_helper import above_space_limit, create_space_for_user, get_household_user_ids
 from cookbook.helper.property_helper import FoodPropertyHelper
+from cookbook.helper.recipe_time_helper import step_time_totals
 from cookbook.helper.shopping_helper import RecipeShoppingEditor
 from cookbook.helper.unit_conversion_helper import UnitConversionHelper
 from cookbook.models import (Automation, BookmarkletImport, Comment, CookLog, CustomFilter,
@@ -1061,6 +1062,15 @@ class StepSerializer(WritableNestedModelSerializer, ExtendedRecipeMixin):
         validated_data['space'] = self.context['request'].space
         return super().create(validated_data)
 
+    def validate(self, data):
+        # working_time is carved out of time, so it can never exceed it. A PATCH may set only one of
+        # the two, so each unset half falls back to what is stored (REQ-008).
+        working_time = data.get('working_time', getattr(self.instance, 'working_time', 0) or 0)
+        time = data.get('time', getattr(self.instance, 'time', 0) or 0)
+        if (working_time or 0) > (time or 0):
+            raise serializers.ValidationError({'working_time': _('The working time of a step cannot exceed its total time.')})
+        return super().validate(data)
+
     @extend_schema_field(str)
     def get_instructions_markdown(self, obj):
         return obj.get_instruction_render()
@@ -1080,7 +1090,7 @@ class StepSerializer(WritableNestedModelSerializer, ExtendedRecipeMixin):
     class Meta:
         model = Step
         fields = (
-            'id', 'name', 'instruction', 'ingredients', 'instructions_markdown', 'time', 'order', 'show_as_header', 'file', 'step_recipe',
+            'id', 'name', 'instruction', 'ingredients', 'instructions_markdown', 'time', 'working_time', 'order', 'show_as_header', 'file', 'step_recipe',
             'step_recipe_data', 'numrecipe', 'show_ingredients_table'
         )
 
@@ -1225,7 +1235,34 @@ class RecipeSerializer(RecipeBaseSerializer):
         above_limit, msg = above_space_limit(self.context['request'].space)
         if above_limit:
             raise serializers.ValidationError(msg)
+        self.validate_derived_times(data)
         return super().validate(data)
+
+    def validate_derived_times(self, data):
+        """Refuse to let a person type a total that contradicts the steps (REQ-008).
+
+        Only on update, and only when the submitted value actually *differs* from what the steps
+        derive. The editor PATCHes the whole recipe object, so a derived recipe submits its derived
+        totals back on every save - rejecting their mere presence would make such a recipe
+        unsavable. Creation is deliberately not checked: an import payload carries both the totals
+        and the steps, and materialization overwrites the totals once the steps land.
+        """
+        if self.instance is None:
+            return
+        if 'working_time' not in data and 'waiting_time' not in data:
+            return
+
+        elapsed, working, waiting = step_time_totals(self.instance)
+        if elapsed <= 0:
+            return
+
+        errors = {}
+        if 'working_time' in data and data['working_time'] != working:
+            errors['working_time'] = _('This recipe\'s times are derived from its steps and cannot be set directly.')
+        if 'waiting_time' in data and data['waiting_time'] != waiting:
+            errors['waiting_time'] = _('This recipe\'s times are derived from its steps and cannot be set directly.')
+        if errors:
+            raise serializers.ValidationError(errors)
 
     def create(self, validated_data):
         validated_data['created_by'] = self.context['request'].user
@@ -2031,7 +2068,7 @@ class StepExportSerializer(WritableNestedModelSerializer):
 
     class Meta:
         model = Step
-        fields = ('name', 'instruction', 'ingredients', 'time', 'order', 'show_as_header', 'show_ingredients_table')
+        fields = ('name', 'instruction', 'ingredients', 'time', 'working_time', 'order', 'show_as_header', 'show_ingredients_table')
 
 
 class RecipeExportSerializer(WritableNestedModelSerializer):

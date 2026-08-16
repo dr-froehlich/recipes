@@ -75,6 +75,12 @@ export interface Step {
      * @type {number}
      * @memberof Step
      */
+    workingTime?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof Step
+     */
     order?: number;
     /**
      * 
@@ -141,6 +147,7 @@ export function StepFromJSONTyped(json: any, ignoreDiscriminator: boolean): Step
         'ingredients': ((json['ingredients'] as Array<any>).map(IngredientFromJSON)),
         'instructionsMarkdown': json['instructions_markdown'],
         'time': json['time'] == null ? undefined : json['time'],
+        'workingTime': json['working_time'] == null ? undefined : json['working_time'],
         'order': json['order'] == null ? undefined : json['order'],
         'showAsHeader': json['show_as_header'] == null ? undefined : json['show_as_header'],
         'file': json['file'] == null ? undefined : UserFileViewFromJSON(json['file']),
@@ -167,6 +174,7 @@ export function StepToJSONTyped(value?: Omit<Step, 'instructions_markdown'|'step
         'instruction': value['instruction'],
         'ingredients': ((value['ingredients'] as Array<any>).map(IngredientToJSON)),
         'time': value['time'],
+        'working_time': value['workingTime'],
         'order': value['order'],
         'show_as_header': value['showAsHeader'],
         'file': UserFileViewToJSON(value['file']),

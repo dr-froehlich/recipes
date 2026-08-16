@@ -28,7 +28,7 @@ from django.core.cache import caches
 from django.core.exceptions import FieldError, ValidationError
 from django.core.files import File
 from django.db import DEFAULT_DB_ALIAS
-from django.db.models import Case, Count, Exists, OuterRef, ProtectedError, Q, Subquery, Value, When, QuerySet
+from django.db.models import Case, Count, Exists, OuterRef, ProtectedError, Q, Subquery, Sum, Value, When, QuerySet
 from django.db.models import Prefetch
 from django.db.models.fields import BooleanField
 from django.db.models.fields.related import ForeignObjectRel
@@ -1977,11 +1977,20 @@ class RecipeViewSet(LoggingMixin, viewsets.ModelViewSet, DeleteRelationMixing):
             if 'keywords_remove_all' in serializer.validated_data and serializer.validated_data['keywords_remove_all']:
                 Recipe.keywords.through.objects.filter(recipe_id__in=safe_recipe_ids).delete()
 
-            if 'working_time' in serializer.validated_data:
-                recipes.update(working_time=serializer.validated_data['working_time'])
+            # a bulk update() bypasses every save hook, so the derived-times lock has to be applied
+            # here by hand: recipes whose steps carry any elapsed time take their totals from those
+            # steps and are silently left out of a batch time edit (REQ-008)
+            if 'working_time' in serializer.validated_data or 'waiting_time' in serializer.validated_data:
+                manual_time_recipes = Recipe.objects.filter(pk__in=safe_recipe_ids).annotate(
+                    step_elapsed=Sum('steps__time')
+                ).filter(Q(step_elapsed=0) | Q(step_elapsed__isnull=True)).values_list('pk', flat=True)
+                manual_time_recipes = Recipe.objects.filter(pk__in=list(manual_time_recipes))
 
-            if 'waiting_time' in serializer.validated_data:
-                recipes.update(waiting_time=serializer.validated_data['waiting_time'])
+                if 'working_time' in serializer.validated_data:
+                    manual_time_recipes.update(working_time=serializer.validated_data['working_time'])
+
+                if 'waiting_time' in serializer.validated_data:
+                    manual_time_recipes.update(waiting_time=serializer.validated_data['waiting_time'])
 
             if 'servings' in serializer.validated_data:
                 recipes.update(servings=serializer.validated_data['servings'])

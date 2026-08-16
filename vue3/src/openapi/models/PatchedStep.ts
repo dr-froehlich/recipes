@@ -75,6 +75,12 @@ export interface PatchedStep {
      * @type {number}
      * @memberof PatchedStep
      */
+    workingTime?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof PatchedStep
+     */
     order?: number;
     /**
      * 
@@ -137,6 +143,7 @@ export function PatchedStepFromJSONTyped(json: any, ignoreDiscriminator: boolean
         'ingredients': json['ingredients'] == null ? undefined : ((json['ingredients'] as Array<any>).map(IngredientFromJSON)),
         'instructionsMarkdown': json['instructions_markdown'] == null ? undefined : json['instructions_markdown'],
         'time': json['time'] == null ? undefined : json['time'],
+        'workingTime': json['working_time'] == null ? undefined : json['working_time'],
         'order': json['order'] == null ? undefined : json['order'],
         'showAsHeader': json['show_as_header'] == null ? undefined : json['show_as_header'],
         'file': json['file'] == null ? undefined : UserFileViewFromJSON(json['file']),
@@ -163,6 +170,7 @@ export function PatchedStepToJSONTyped(value?: Omit<PatchedStep, 'instructions_m
         'instruction': value['instruction'],
         'ingredients': value['ingredients'] == null ? undefined : ((value['ingredients'] as Array<any>).map(IngredientToJSON)),
         'time': value['time'],
+        'working_time': value['workingTime'],
         'order': value['order'],
         'show_as_header': value['showAsHeader'],
         'file': UserFileViewToJSON(value['file']),

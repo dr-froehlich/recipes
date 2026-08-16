@@ -10,6 +10,7 @@ from django.contrib import auth
 from django.contrib.auth.models import Group, User
 from django.contrib.postgres.indexes import GinIndex
 from django.contrib.postgres.search import SearchVectorField
+from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import InMemoryUploadedFile, UploadedFile
 from django.core.validators import MinLengthValidator
 from django.db import IntegrityError, models
@@ -964,6 +965,8 @@ class Step(ExportModelOperationsMixin('step'), models.Model, PermissionModelMixi
     instruction = models.TextField(blank=True)
     ingredients = models.ManyToManyField(Ingredient, blank=True)
     time = models.IntegerField(default=0, blank=True)
+    # the attended portion inside time; waiting is derived as time - working_time and never stored (REQ-008)
+    working_time = models.IntegerField(default=0, blank=True)
     order = models.IntegerField(default=0)
     file = models.ForeignKey('UserFile', on_delete=models.PROTECT, null=True, blank=True)
     show_as_header = models.BooleanField(default=True)
@@ -977,6 +980,13 @@ class Step(ExportModelOperationsMixin('step'), models.Model, PermissionModelMixi
     def get_instruction_render(self):
         from cookbook.helper.template_helper import render_instructions
         return render_instructions(self)
+
+    def clean(self):
+        # working_time is carved out of time, so it can never exceed it - otherwise the waiting portion
+        # every recipe total is derived from would go negative (REQ-008)
+        super().clean()
+        if (self.working_time or 0) > (self.time or 0):
+            raise ValidationError({'working_time': _('The working time of a step cannot exceed its total time.')})
 
     def __str__(self):
         if not self.recipe_set.exists():

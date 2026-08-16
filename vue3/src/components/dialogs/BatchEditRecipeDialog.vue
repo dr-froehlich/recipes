@@ -62,10 +62,12 @@
                         <v-col cols="12" md="6">
                             <v-card :title="$t('Miscellaneous')" prepend-icon="fa-solid fa-list" variant="plain">
                                 <v-card-text>
-                                    <v-number-input :label="$t('WorkingTime')" v-model="batchUpdateRequest.recipeBatchUpdate.workingTime" :step="5">
+                                    <v-number-input :label="$t('WorkingTime')" v-model="batchUpdateRequest.recipeBatchUpdate.workingTime" :step="5"
+                                                    :hint="$t('TimesDerivedFromSteps')" persistent-hint>
 
                                     </v-number-input>
-                                    <v-number-input :label="$t('WaitingTime')" v-model="batchUpdateRequest.recipeBatchUpdate.waitingTime" :step="5">
+                                    <v-number-input :label="$t('WaitingTime')" v-model="batchUpdateRequest.recipeBatchUpdate.waitingTime" :step="5"
+                                                    :hint="$t('TimesDerivedFromSteps')" persistent-hint>
 
                                     </v-number-input>
                                     <v-number-input :label="$t('Serving')" v-model="batchUpdateRequest.recipeBatchUpdate.servings">
