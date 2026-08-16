@@ -231,6 +231,28 @@ which. Pizza's waiting steps likewise sum to 720 + 1440 + 240 = **2400**, exactl
   gap that the new model can express (put the wait on the `Tag 1` step) but that no migration
   can infer.
 
+### Post-deploy verification (2026-08-16, commit 099c2a0bb)
+
+Deployed with `deploy/deploy.sh --yes`; migration `0244_step_working_time` applied; verified
+restorable dump taken first at `deploy/dumps/tandoor-20260816T113100Z.dump`. The backfill did
+exactly what the table above predicted, with no surprises:
+
+| recipe | after migration | step elapsed / working |
+|---|---|---|
+| Baguette | 0 / 725 | 725 / 0 |
+| Kartoffelsalat | 0 / 190 | 190 / 0 |
+| Pizza | 0 / 2450 | 2450 / 0 |
+
+Across the whole collection of **273 recipes**: 3 derived, 1 with hand-edited totals and no step
+times (preserved untouched), 269 with no times at all (untouched). The migration touched nothing
+it was not meant to touch, which is the property that mattered — the recipe-level fields stay
+hand-editable for every recipe any importer has ever produced.
+
+Remaining household follow-up, not code: set working times on Pizza's six attended steps (10, 5,
+5, 10, 10, 5) and Kartoffelsalat's six (5, 10, 5, 15, 10, 5) to restore the splits, and put
+Kartoffelsalat's overnight rest on its `Tag 1` step to recover the 460 minutes that live in no
+step.
+
 ## Risks
 
 - **The OpenAPI regeneration** is the one irreversible-looking step. Mitigated by doing it on a
