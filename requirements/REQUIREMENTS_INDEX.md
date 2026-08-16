@@ -13,6 +13,6 @@ Move a REQ's row in the **same commit** as the REQ frontmatter and the code.
 | REQ-006 | Word importer — a .docx import path for the household's recipe collection | DONE | [REQ-006](REQ-006.md) | REQ-001, REQ-002 |
 | REQ-007 | Import repairs — recover food, unit and note from the household's ingredient lines | DONE | [REQ-007](REQ-007.md) | REQ-002, REQ-006 |
 | REQ-008 | Per-step working and waiting time — derive the recipe's totals from its steps | OPEN | [REQ-008](REQ-008.md) | REQ-001, REQ-002, REQ-003, REQ-004 |
-| REQ-009 | Fork CI — run the fork's own checks in GitHub Actions, including PostgreSQL | OPEN | [REQ-009](REQ-009.md) | REQ-001, REQ-002 |
+| REQ-009 | Fork CI — run the fork's own checks in GitHub Actions, including PostgreSQL | DONE | [REQ-009](REQ-009.md) | REQ-001, REQ-002 |
 
 New requirement template: [`_templates/req.md`](_templates/req.md)
