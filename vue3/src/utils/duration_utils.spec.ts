@@ -40,14 +40,13 @@ describe('formatDuration', () => {
         expect(formatDuration(150)).toBe('2 h 30 min')
     })
 
-    // the formatting is unconditional: there is no preference, and no argument that puts the raw
-    // minute rendering back. A second required parameter, or an ignored one that changed the
-    // output, would both mean the toggle had grown back
+    // one required parameter, and nothing beyond the labels changes the format: the rendering is
+    // unconditional, with no second switch that puts the raw minute form back
     it('offers no way to get the raw minute rendering back', () => {
         expect(formatDuration.length).toBe(1)
 
         const callAnyway = formatDuration as unknown as (...args: unknown[]) => string
         expect(callAnyway(150, LABELS, false)).toBe('2 h 30 min')
-        expect(callAnyway(4320, LABELS, false, {useReadableTime: false})).toBe('72 h')
+        expect(callAnyway(4320, LABELS, false, {raw: true})).toBe('72 h')
     })
 })
