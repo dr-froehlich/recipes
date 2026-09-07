@@ -12,6 +12,21 @@ lockfile.
 So the oracle here is this repository's own git history, which makes these coupled,
 self-contained checks rather than anything the lab needs to produce.
 
+**Repaired during REQ-010.** As written these tests compared the branch against
+``upstream/develop``'s *current* tip. That held only while upstream stood still: 129 upstream
+commits later the same branch reported a foreign merge base and six Weblate-updated catalogs it
+had never touched. The oracle is now the branch's own cut point, and the requirement it grades is
+the one that was always meant — the branch starts at an **upstream** commit, and *its own* diff
+carries no harness and no catalog but English.
+
+**Superseded in part by REQ-010.** ``test_default_flipped_and_english_only`` also used to
+assert that this fork's ``develop`` kept ``use_readable_time`` defaulting to ``True`` while the
+branch shipped ``False`` — REQ-005 Decision 3's "the flip belongs to the branch alone". Upstream
+then declined the preference outright on #4785, REQ-010 removed it from this fork as well, and
+there is no longer a fork-side default for the branch to differ from. That half of the assertion
+is gone; everything these tests say about the ``readable-durations`` branch itself is unchanged
+and still true, and the branch is deliberately left at the commit #4785 was reviewed at.
+
 **Required environment.** They read git state that a clean checkout does not have: the
 ``upstream`` remote must exist and be fetched, and the branch must be present locally. When
 either is missing the tests **skip**. That is deliberate and it cuts both ways. While
@@ -83,6 +98,23 @@ def git(*args):
     return result.stdout.strip() if result.returncode == 0 else None
 
 
+def git_ok(*args):
+    """Run a git command for its exit status alone (--is-ancestor prints nothing)."""
+    return subprocess.run(
+        ('git',) + args, cwd=REPO_ROOT, capture_output=True, text=True
+    ).returncode == 0
+
+
+def branch_base():
+    """The upstream commit the branch was cut from.
+
+    Deliberately the branch's own merge base rather than ``upstream/develop``'s current tip:
+    upstream keeps moving, and comparing a finished branch against a tip that has advanced
+    reports upstream's later commits as if the branch had made them.
+    """
+    return git('merge-base', BASE, BRANCH)
+
+
 def require_branch_and_base():
     """Skip unless both the PR branch and the fetched upstream base are present."""
     if git('rev-parse', '--verify', f'{BRANCH}^{{commit}}') is None:
@@ -100,14 +132,16 @@ def test_branch_contains_only_the_contribution():
     """The branch is cut from upstream's tip and carries no fork harness (REQ-005 AC1)."""
     require_branch_and_base()
 
-    # cut from upstream's tip, not from this fork's develop
-    merge_base = git('merge-base', BASE, BRANCH)
-    assert merge_base == git('rev-parse', f'{BASE}^{{commit}}'), (
-        f'{BRANCH} is not based on {BASE} — it must be cut from a freshly fetched '
-        f'upstream tip, or the PR will carry this fork\'s unrelated history'
+    # cut from an upstream commit, not from this fork's develop — otherwise the PR carries
+    # this fork's unrelated history
+    base = branch_base()
+    assert base, f'{BRANCH} and {BASE} share no history at all'
+    assert git_ok('merge-base', '--is-ancestor', base, f'{BASE}^{{commit}}'), (
+        f'{BRANCH} was cut from {base}, which is not an ancestor of {BASE} — it must branch '
+        f'from upstream, not from this fork'
     )
 
-    touched = changed_files(f'{BASE}..{BRANCH}')
+    touched = changed_files(f'{base}..{BRANCH}')
     assert touched, f'{BRANCH} changes nothing against {BASE}'
 
     harness = {
@@ -176,14 +210,8 @@ def test_default_flipped_and_english_only():
         'user\'s recipe pages change on upgrade (REQ-005 Decision 3)'
     )
 
-    fork_model = git('show', 'develop:cookbook/models.py')
-    assert 'use_readable_time = models.BooleanField(default=True)' in fork_model, (
-        'this fork keeps the preference on by default (REQ-003 Decision 3); the flip belongs '
-        'to the pull request branch alone'
-    )
-
     catalogs = {
-        path for path in changed_files(f'{BASE}..{BRANCH}')
+        path for path in changed_files(f'{branch_base()}..{BRANCH}')
         if path.startswith('vue3/src/locales/')
     }
     assert catalogs == {'vue3/src/locales/en.json'}, (

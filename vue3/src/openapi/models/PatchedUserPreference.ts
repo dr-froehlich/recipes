@@ -128,12 +128,6 @@ export interface PatchedUserPreference {
      * @type {boolean}
      * @memberof PatchedUserPreference
      */
-    useReadableTime?: boolean;
-    /**
-     * 
-     * @type {boolean}
-     * @memberof PatchedUserPreference
-     */
     useKj?: boolean;
     /**
      * 
@@ -279,7 +273,6 @@ export function PatchedUserPreferenceFromJSONTyped(json: any, ignoreDiscriminato
         'defaultUnit': json['default_unit'] == null ? undefined : json['default_unit'],
         'defaultPage': json['default_page'] == null ? undefined : DefaultPageEnumFromJSON(json['default_page']),
         'useFractions': json['use_fractions'] == null ? undefined : json['use_fractions'],
-        'useReadableTime': json['use_readable_time'] == null ? undefined : json['use_readable_time'],
         'useKj': json['use_kj'] == null ? undefined : json['use_kj'],
         'navSticky': json['nav_sticky'] == null ? undefined : json['nav_sticky'],
         'ingredientDecimals': json['ingredient_decimals'] == null ? undefined : json['ingredient_decimals'],
@@ -322,7 +315,6 @@ export function PatchedUserPreferenceToJSONTyped(value?: Omit<PatchedUserPrefere
         'default_unit': value['defaultUnit'],
         'default_page': DefaultPageEnumToJSON(value['defaultPage']),
         'use_fractions': value['useFractions'],
-        'use_readable_time': value['useReadableTime'],
         'use_kj': value['useKj'],
         'nav_sticky': value['navSticky'],
         'ingredient_decimals': value['ingredientDecimals'],

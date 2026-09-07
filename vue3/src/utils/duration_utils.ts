@@ -20,17 +20,16 @@ export const DEFAULT_DURATION_LABELS: DurationLabels = {hour: 'h', minute: 'min'
  * used, a 72 hour proof reads as "72 h".
  *
  * @param minutes duration in minutes, as stored on recipes and steps
- * @param useReadableTime user preference, when false the raw minute rendering is returned unchanged
  * @param labels translated unit labels
  * @returns the formatted duration, empty for a missing value
  */
-export function formatDuration(minutes: number | null | undefined, useReadableTime: boolean = true, labels: DurationLabels = DEFAULT_DURATION_LABELS): string {
+export function formatDuration(minutes: number | null | undefined, labels: DurationLabels = DEFAULT_DURATION_LABELS): string {
     if (minutes === null || minutes === undefined || Number.isNaN(minutes)) {
         return ''
     }
 
     const total = Math.round(minutes)
-    if (!useReadableTime || !Number.isFinite(total) || total < 60) {
+    if (!Number.isFinite(total) || total < 60) {
         return `${minutes} ${labels.minute}`
     }
 

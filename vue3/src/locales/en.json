@@ -752,8 +752,6 @@
   "Use_Plural_Food_Simple": "Use plural form for food dynamically",
   "Use_Plural_Unit_Always": "Use plural form for unit always",
   "Use_Plural_Unit_Simple": "Use plural form for unit dynamically",
-  "Use_Readable_Time": "Readable Times",
-  "Use_Readable_Time_Help": "Show recipe and step times as hours and minutes instead of a plain number of minutes.",
   "UsedInRecipes": "Used in Recipes",
   "User": "User",
   "UserFileHelp": "Files uploaded to the space. ",
