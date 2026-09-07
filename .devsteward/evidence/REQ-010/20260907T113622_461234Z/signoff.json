@@ -1,0 +1,46 @@
+{
+  "pr_url": "https://github.com/TandoorRecipes/recipes/pull/4810",
+  "pr_number": 4810,
+  "base_repo": "TandoorRecipes/recipes",
+  "base_branch": "develop",
+  "head_repo": "dr-froehlich/recipes",
+  "head_branch": "readable-durations-v2",
+  "checks_green": false,
+  "checks_blocked_on_approval": true,
+  "local_verification": {
+    "pytest": "1306 passed, 28 skipped (fork, develop @ 7d4d248a8 - the branch has no cookbook/ path to test)",
+    "vitest": "14 passed (isolated worktree of readable-durations-v2 @ 8ed0eff08, merge-base 7e1c427a0 is an ancestor of upstream/develop)",
+    "yarn_build": "built clean (same isolated worktree)",
+    "makemigrations_check": "No changes detected (fork, develop @ 7d4d248a8)"
+  },
+  "cla_signed": true,
+  "cla_requested": true,
+  "files_changed": [
+    "vue3/package.json",
+    "vue3/src/components/display/RecipeCard.vue",
+    "vue3/src/components/display/RecipeView.vue",
+    "vue3/src/components/display/StepView.vue",
+    "vue3/src/composables/useDurationDisplay.ts",
+    "vue3/src/locales/en.json",
+    "vue3/src/utils/duration_utils.spec.ts",
+    "vue3/src/utils/duration_utils.ts",
+    "vue3/vitest.config.ts",
+    "vue3/yarn.lock"
+  ],
+  "description": "This is #4785 redone the way you asked: no user preference, the times are simply shown in a\nhuman readable format.\n\n> While I like the feature I think its a lot more complex than it need to be. I do not think we\n> need the user preference. Just show the times in a human readable format.\n\nThe preference is gone entirely — `UserPreference.use_readable_time`, its migration, the\nserializer entry, the Cosmetic settings checkbox and the regenerated client models are all out.\nThis pull request touches no Python at all. Ten files, all under `vue3/`, and the formatting is\nunconditional.\n\nI have left the duration-field conversion alone. It is a much bigger change than this one, it\nbreaks the API for existing clients, and it sounded like something you may want to shape\nyourself.\n\n## What this does\n\nRecipe and step durations are stored and displayed as a flat number of minutes, so a 72 hour\nsourdough proof renders as `4320 min`, the step timer button shows a bare `4320`, and the recipe\ncard's time chip shows working + waiting summed with no unit at all.\n\nA shared formatter in `vue3/src/utils/duration_utils.ts` converts minutes for display:\n\n| Input | Output |\n|---|---|\n| 45 | `45 min` |\n| 59 | `59 min` |\n| 60 | `1 h` |\n| 90 | `1 h 30 min` |\n| 120 | `2 h` |\n| 4320 | `72 h` |\n\nBelow an hour it stays minutes; from an hour up it renders `H h`, plus ` M min` when there is a\nremainder. No day rollover — 4320 stays `72 h`, matching the table in #382. `Timer.vue` already\nexpresses \"+3 Days\" for the one case where a calendar day matters, and long proofs are spoken as\n\"72 hours\", not \"3 days\".\n\nUnit labels are passed in by the caller from translation keys, so no unit string is inlined in\nthe conversion logic. `min` already existed; `h` is new in `en.json`. English keys only, per\n`docs/contribute/translations.md` — Weblate can take it from there.\n\nApplied at the read-only duration displays: both `RecipeView` layouts, the `RecipeCard` time\nchip, and the `StepView` timer button. Duration *inputs* keep plain minutes — entering durations\nwas never the problem, reading them is. It also removes two hardcoded `min` strings in\n`RecipeView.vue` that bypassed i18n; they sat on the lines this rewrites.\n\n## The second commit — vitest\n\nThe contribution guidelines mention you are looking for contributors willing to set up vue3\ntesting, so this sets it up. The formatter is a pure function of one number, which makes it a\nnatural first subject: the whole format table, plus zero, null, undefined, negative and\nnon-finite input. 14 tests, run with `yarn --cwd vue3 test`.\n\nVitest is Vite-native so the configuration is near zero, and it is a devDependency, so it cannot\nreach the shipped bundle. It is the last commit and touches only `package.json`,\n`vitest.config.ts`, `yarn.lock` and the spec file, so the test tooling can be reviewed on its own.\n\n## Notes\n\n- `yarn.lock` was regenerated on top of this branch's base rather than transplanted, so it\n  carries your dependency versions, not mine.\n- Verified locally: the vitest suite, `yarn build`, and the full Python suite on a tree carrying\n  this change.\n- I left the surrounding reformatting alone rather than dragging unrelated churn into the diff —\n  the files this touches do not currently satisfy the repo's prettier config either way. Happy to\n  run it if you would prefer.\n\nCloses #382.\n",
+  "issue_4785_comment_url": "https://github.com/TandoorRecipes/recipes/pull/4785#issuecomment-5569801974",
+  "issue_382_comment_url": "https://github.com/TandoorRecipes/recipes/issues/382#issuecomment-5569802292",
+
+  "recipe": "Baguette",
+  "working_time_minutes": 40,
+  "waiting_time_minutes": 2345,
+  "step_time_minutes": 1440,
+  "cosmetic_settings_offers_readable_time_checkbox": false,
+  "settings_page_renders": true,
+  "observed": {
+    "detail_working_time": "40 min",
+    "detail_waiting_time": "39 h 5 min",
+    "list_card_chip": "39 h 45 min",
+    "step_time": "24 H"
+  }
+}
