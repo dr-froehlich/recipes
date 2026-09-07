@@ -13,12 +13,25 @@ seed here is what every later step inherits.
 ## 1. Orient
 
 - **Where the documents live:** `.devsteward/config.yaml` names the requirements dir, the
-  index, the plans dir and the concepts dir (`requirements_dir`, `index_file`, `plans_dir`,
-  `concepts_dir`; defaults `docs/requirements/`, `docs/plans/`, `docs/concepts/`). Read it
-  first and use *those* paths throughout — a project whose `docs/` belongs to a docs
+  index, the plans dir, the concepts dir and the backlog file (`requirements_dir`,
+  `index_file`, `plans_dir`, `concepts_dir`, `backlog_file`).
+  The defaults are `docs/requirements/`, `docs/plans/`, `docs/concepts/`, `docs/BACKLOG.md`.
+  Read it first and use *those* paths throughout — a project whose `docs/` belongs to a docs
   generator keeps them elsewhere.
-- Read `CLAUDE.md`, `REQ-001.md` (the north star) and `REQUIREMENTS_INDEX.md` in the
-  requirements dir. The new REQ must advance REQ-001 or be explicitly scoped against it.
+- **Run `steward backlog-list` (REQ-093).** If the project keeps a backlog, this intake
+  probably starts from it — see §2d. A project with no backlog file simply reports so; that
+  is a valid state, not a missing artifact.
+- Read `CLAUDE.md`, the north star and `REQUIREMENTS_INDEX.md` in the requirements dir.
+  The new REQ must advance the north star or be explicitly scoped against it.
+- **The north star is a role, not an id (REQ-092).** It starts at `REQ-001.md`, but a
+  project whose direction has changed hands it on: if `REQ-001`'s status is `superseded`
+  (or `dropped`), follow its `supersedes` chain outward — the REQ declaring
+  `supersedes: REQ-001`, then whatever supersedes *that* — to the **live compass**: the
+  first heir that is not itself dropped/superseded and carries `north-star` in its `tags:`.
+  Read *that* REQ as the north star; the retired one is history. When this intake is
+  itself the direction change, the new REQ must declare `supersedes:` the current compass
+  **and** carry the `north-star` tag — `steward lint` refuses to let the old compass retire
+  into nothing.
 - Find the next free id: highest `REQ-NNN` in the index + 1, zero-padded. Ids may carry a
   trailing letter (`REQ-028p`, an umbrella split into sub-parts) — **strip any trailing
   letter before taking the max**, so `REQ-028p` counts as `028`, never `028` + 1 skipped.
@@ -33,7 +46,7 @@ Ask, in `AskUserQuestion` form when interactive, until you genuinely understand:
 - **Risks / weaknesses:** what could make this the wrong call?
 - **Dependencies:** which existing REQs must be done first? (→ `depends_on`)
 - **Acceptance:** system-level, measurable, classified — §2a–§2b below.
-- **Process:** the three declarations only a present human can make — §2c below.
+- **Process:** the two declarations only a present human can make — §2c below.
 - **Localization split:** any user-facing strings? They stay isolated/translatable; all
   code and technical text is English.
 
@@ -160,8 +173,8 @@ exists. So screen every criterion whose real risk is corpus-shaped with one ques
 only trustworthy after running against the live/real system and iterating on what it turns up?*
 If yes, do **not** mechanically file it `artifact`/`manual` and ship it to validation: make the
 live proof a **develop-session obligation** — performed and iterated attended, **fixable in
-place**, stated in the Requirement + a Decision (`develop: split` is its natural shape), *not*
-an acceptance criterion routed to the fixless System-Test phase. Keep a synthetic-fixture
+place**, stated in the Requirement + a Decision, *not* an acceptance criterion routed to the
+fixless System-Test phase. Keep a synthetic-fixture
 `regression` alongside to prove the *mechanism* disconfirmably in the gate. Reserve
 `artifact`/`manual` System-Test deferral for proofs a synthetic fixture genuinely can't stand in
 for **and** whose oracle needs no fixing loop. Beware the two over-generalizations that breed
@@ -181,7 +194,7 @@ the proof gets **no repair loop** and every red costs a whole extra session. Fil
 proof as a develop obligation in the Requirement + a Decision, and keep a synthetic-fixture
 `regression` AC for the mechanism.
 
-### 2c. The three process declarations (while the human is present)
+### 2c. The two process declarations (while the human is present)
 
 Decide these now — they must not be made headless later — and record them in the
 optional `process:` frontmatter block (omit the block when every value is the default
@@ -206,25 +219,59 @@ and no lab is needed):
   skill carries that workflow).
   **Phase-model placement — ask this explicitly (REQ-071):** when `concept: true` is set
   *because the target ACs depend on the concept deliverable*, also decide where the
-  post-freeze work lives: **`develop: split`**, so a post-freeze develop phase iterates the
-  analysis and authors the target ACs against the frozen deliverable, **or** a **named
-  downstream REQ** that owns the modeling — and then the upstream REQ must **never carry the
-  downstream REQ's acceptance bar** (no "sufficient basis for phase-N+1"-style manual AC on
-  an upstream inventory step whose own Notes scope that work out — the FlowSteward REQ-081
-  AC6 trap). `concept: true` + `develop: fused` stays the legitimate default for spike-shaped
-  concepts whose ACs *are* writable at intake; either shape alone is fine — the *unexamined
-  combination* is the defect.
+  post-freeze work lives: **the concept session itself authors the target ACs** once the
+  deliverable is frozen, iterating the analysis against it, **or** a **named downstream REQ**
+  owns the modeling — and then the upstream REQ must **never carry the downstream REQ's
+  acceptance bar** (no "sufficient basis for phase-N+1"-style manual AC on an upstream
+  inventory step whose own Notes scope that work out — the FlowSteward REQ-081 AC6 trap).
+  Ask which one; an unexamined answer is the defect, and the choice belongs in the REQ's
+  Decisions table.
 - `lab:` — which REQs own the **lab assets** the System-Test phase will require?
   Default `[]`.
-- `develop:` — `fused`, one design+build session (the **default**), or `split`, an
-  attended design review before build — reserved for genuinely risky REQs. If split,
-  extract *why* and record the reason in the REQ's Decisions table.
+
+### 2d. Taking up backlog items (REQ-093)
+
+A backlog item is a **user need in the user's words** — the stakeholder-level requirement a
+REQ is *translated from*. When this intake serves one or more items, do this in **exactly
+this order**:
+
+1. **Choose the items with the operator.** Show `steward backlog-list` and let them pick.
+   Several items may feed one REQ; one item may need several REQs over time.
+2. **Author each item's acceptance criteria first — in the user's language, before you
+   design anything.** They go in the backlog file's `## Acceptance criteria` section, one
+   `###` heading per handle, as a bullet list of what would make the owner say *"yes, that
+   solves it"*. Ask for them in their words; do not write them from what you already intend
+   to build. **This ordering is the whole point**: criteria written after the solution is
+   known get quietly bent to fit it, which is the exact failure this layer exists to
+   prevent, one level up. Skip only when the item already has them.
+3. **Then translate.** Now write the requirement in solution language, and only now write
+   the REQ's own acceptance criteria — which are *verification* criteria (did we build what
+   was specified), a different question from the item's acceptance criteria (was what we
+   specified worth building).
+4. **Record the take-up** in the REQ's frontmatter `backlog_refs: [handle, ...]`. That list
+   is the **only** stored record of take-up — never add a "taken up by" column to the
+   backlog file, and never a status column anywhere. `steward backlog-list` derives an
+   item's state from `backlog_refs` plus the append-only verdict log.
+
+**The item's acceptance is never this REQ's gate.** It is the owner's separate verdict,
+recorded whenever they are ready with `steward backlog-accept` / `backlog-deny --reason`
+(REQ-093 Decision 4). A denial does **not** fail the REQ — the REQ closes on its
+verification result — it leaves the item open with an attempt record. So do **not** turn an
+item's acceptance criterion into a `manual` AC on the REQ: that would make the owner's
+opinion block a build that met its specification, and it would force a validation session on
+every backlog-linked REQ.
+
+**A need that names a mechanism is not a need.** If the operator's item says *how* rather
+than *what*, say so and ask what it is for — an item that names a mechanism has already made
+a decision nobody asked it to make. Record anything you propose yourself with
+`--origin proposed`, and only when the operator chose it from alternatives.
 
 ## 3. Emit
 
 - Write `REQ-NNN.md` into the requirements dir from `_templates/req.md` with `status: draft`,
   filled frontmatter (including the `process:` block when it deviates from defaults or
-  declares a lab), a real Context/Decisions/Requirement, and a `yaml acceptance` block
+  declares a lab, and `backlog_refs:` when this REQ takes up backlog items), a real
+  Context/Decisions/Requirement, and a `yaml acceptance` block
   where **every** criterion has an `id`, a `test:`, and a `check:`.
 - Add its row to `REQUIREMENTS_INDEX.md` (status `DRAFT`). The index ↔ frontmatter pair is the
   **single source of truth** for status (`steward lint` keeps them in lockstep).
