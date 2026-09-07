@@ -14,6 +14,6 @@ Move a REQ's row in the **same commit** as the REQ frontmatter and the code.
 | REQ-007 | Import repairs — recover food, unit and note from the household's ingredient lines | DONE | [REQ-007](REQ-007.md) | REQ-002, REQ-006 |
 | REQ-008 | Per-step working and waiting time — derive the recipe's totals from its steps | DONE | [REQ-008](REQ-008.md) | REQ-001, REQ-002, REQ-003, REQ-004 |
 | REQ-009 | Fork CI — run the fork's own checks in GitHub Actions, including PostgreSQL | DONE | [REQ-009](REQ-009.md) | REQ-001, REQ-002 |
-| REQ-010 | Unconditional readable durations — drop the preference here and re-offer it upstream | OPEN | [REQ-010](REQ-010.md) | REQ-001, REQ-003, REQ-005, REQ-008 |
+| REQ-010 | Unconditional readable durations — drop the preference here and re-offer it upstream | DONE | [REQ-010](REQ-010.md) | REQ-001, REQ-003, REQ-005, REQ-008 |
 
 New requirement template: [`_templates/req.md`](_templates/req.md)
